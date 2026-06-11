@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "MaxFit Galați",
+    "slug": "maxfit",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "maxfit",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0D0D0F",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0D0D0F"
+    },
+    "ios": {
+      "bundleIdentifier": "ro.maxfit.app",
+      "supportsTablet": false,
+      "infoPlist": {
+        "CFBundleDevelopmentRegion": "ro"
+      }
+    },
+    "android": {
+      "package": "ro.maxfit.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0D0D0F"
+      }
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
