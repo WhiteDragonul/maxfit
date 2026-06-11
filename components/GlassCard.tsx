@@ -35,9 +35,8 @@ export default function GlassCard({
       <View
         style={[
           StyleSheet.absoluteFill,
-          { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth, borderColor },
+          { borderRadius: radius, borderWidth: StyleSheet.hairlineWidth, borderColor, pointerEvents: 'none' },
         ]}
-        pointerEvents="none"
       />
       <View style={{ padding }}>{children}</View>
     </View>

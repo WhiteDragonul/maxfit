@@ -35,7 +35,7 @@ export default function LiquidTabBar({ state, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   return (
-    <View style={[styles.wrapper, { bottom: Math.max(insets.bottom, 12) + 12 }]} pointerEvents="box-none">
+    <View style={[styles.wrapper, { bottom: Math.max(insets.bottom, 12) + 12 }]}>
       <View style={styles.bar}>
         <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
         <LinearGradient
@@ -44,7 +44,7 @@ export default function LiquidTabBar({ state, navigation }: BottomTabBarProps) {
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
-        <View style={styles.border} pointerEvents="none" />
+        <View style={styles.border} />
         {state.routes.map((route, index) => {
           const config = TAB_CONFIG[route.name];
           if (!config) return null;
@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    pointerEvents: 'box-none',
   },
   bar: {
     flexDirection: 'row',
@@ -87,10 +88,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     overflow: 'hidden',
     backgroundColor: 'rgba(26,27,33,0.4)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 25 },
-    shadowOpacity: 0.5,
-    shadowRadius: 25,
+    boxShadow: '0 25px 25px rgba(0,0,0,0.5)',
     elevation: 12,
   },
   border: {
@@ -98,6 +96,7 @@ const styles = StyleSheet.create({
     borderRadius: 999,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
+    pointerEvents: 'none',
   },
   item: {
     alignItems: 'center',
@@ -108,10 +107,7 @@ const styles = StyleSheet.create({
   },
   itemActive: {
     backgroundColor: 'rgba(241,90,35,0.1)',
-    shadowColor: '#F15A23',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 15,
+    boxShadow: '0 0 15px rgba(241,90,35,0.3)',
     elevation: 6,
   },
   label: {

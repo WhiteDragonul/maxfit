@@ -32,7 +32,7 @@ function Blob({ size, color, opacity, ...pos }: BlobSpec) {
 // redate cu gradiente radiale SVG in locul filter: blur(80px)
 export default function Blobs() {
   return (
-    <View style={StyleSheet.absoluteFill} pointerEvents="none">
+    <View style={[StyleSheet.absoluteFill, { pointerEvents: 'none' }]}>
       <Blob size={300} color="#F15A23" opacity={0.3} top={-80} left={-80} />
       <Blob size={400} color="#ff8a5c" opacity={0.25} bottom={-120} right={-100} />
       <Blob size={250} color="#d94e1b" opacity={0.2} top={320} left={180} />

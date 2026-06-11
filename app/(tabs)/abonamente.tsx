@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Platform, TextStyle } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import Blobs from '@/components/Blobs';
 import GlassCard from '@/components/GlassCard';
@@ -151,9 +151,15 @@ const styles = StyleSheet.create({
   pageTitle: { ...Type.displayLgMobile, color: Colors.white },
   pageTitleAccent: {
     color: Colors.primary,
-    textShadowColor: 'rgba(241,90,35,0.5)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
+    // textShadow (string) e suportat doar de react-native-web; pe native raman props clasice
+    ...Platform.select<TextStyle>({
+      web: { textShadow: '0 0 20px rgba(241,90,35,0.5)' } as TextStyle,
+      default: {
+        textShadowColor: 'rgba(241,90,35,0.5)',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 20,
+      },
+    }),
   },
   pageSubtitle: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginTop: 8 },
   popularCard: { transform: [{ scale: 1.02 }], zIndex: 10 },
@@ -190,10 +196,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: Colors.primary,
     alignItems: 'center',
-    shadowColor: '#F15A23',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
+    boxShadow: '0 0 20px rgba(241,90,35,0.4)',
     elevation: 8,
   },
   ctaPrimaryText: { ...Type.labelBold, color: Colors.onPrimary },

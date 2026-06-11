@@ -186,10 +186,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     padding: 16,
     borderRadius: 12,
-    shadowColor: '#ffffff',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.1,
-    shadowRadius: 30,
+    boxShadow: '0 0 30px rgba(255,255,255,0.1)',
     elevation: 4,
   },
   qrInner: {
