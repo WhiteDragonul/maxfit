@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ro"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Stay Fit Gym - Clase</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e3e2e2",
+                        "on-primary-fixed-variant": "#ff8a5c",
+                        "secondary": "#c6c6c6",
+                        "tertiary-container": "#883700",
+                        "on-primary-fixed": "#ffffff",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "surface-container-highest": "#2a2a2a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary-container": "#F15A23",
+                        "on-surface": "#e2e2ea",
+                        "surface-container-low": "#181818",
+                        "inverse-surface": "#e2e2ea",
+                        "surface": "#121212",
+                        "surface-tint": "#F15A23",
+                        "on-tertiary": "#562000",
+                        "on-error": "#690005",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#793000",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#2f3131",
+                        "outline": "#8d909d",
+                        "outline-variant": "#424752",
+                        "on-primary-container": "#ffffff",
+                        "secondary-container": "#484949",
+                        "surface-container-high": "#242424",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1e1e1e",
+                        "surface-container-lowest": "#0c0e13",
+                        "surface-variant": "#2a2a2a",
+                        "inverse-on-surface": "#2e3036",
+                        "on-tertiary-container": "#ffb089",
+                        "surface-bright": "#37393f",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#F15A23",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "primary": "#F15A23",
+                        "on-tertiary-fixed": "#341100",
+                        "primary-fixed-dim": "#d94e1b",
+                        "on-secondary-fixed-variant": "#464747",
+                        "inverse-primary": "#d94e1b",
+                        "surface-dim": "#121212",
+                        "on-background": "#e2e2ea",
+                        "tertiary": "#ffb692",
+                        "on-secondary-container": "#b8b8b8",
+                        "on-surface-variant": "#c3c6d4",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "background": "#121212"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "glass-inner-padding": "24px",
+                        "section-spacing": "32px",
+                        "stack-gap": "16px",
+                        "container-margin": "20px",
+                        "element-padding": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.5px", "fontWeight": "800" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "800" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "0px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #121212;
+            color: #e2e2ea;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Organic Background Blobs */
+        .bg-blob {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.3;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #F15A23;
+            top: -10%;
+            left: -10%;
+        }
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: #ff8a5c;
+            bottom: -20%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+        .blob-3 {
+            width: 250px;
+            height: 250px;
+            background: #d94e1b;
+            top: 40%;
+            left: 60%;
+            animation-delay: -10s;
+            opacity: 0.2;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, 50px) scale(1.1); }
+            100% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(30, 32, 36, 0.6) 0%, rgba(20, 22, 24, 0.4) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.1), 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .glass-pill {
+            background: rgba(30, 32, 36, 0.5);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen relative overflow-x-hidden pb-32">
+<!-- Animated Background -->
+<div class="bg-blob blob-1"></div>
+<div class="bg-blob blob-2"></div>
+<div class="bg-blob blob-3"></div>
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-container-margin py-element-padding w-full z-50 sticky top-0 backdrop-blur-md bg-surface/30">
+<div class="flex items-center gap-3 hover:opacity-80 transition-opacity cursor-pointer">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a fit, focused individual with a subtle, determined expression, set against a dark, moody gym background with a slight blue rim light. The style is sleek, modern, and high-contrast, fitting a premium fitness app." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw8w6nzt7qrgpCC6X0xDIVrEPQ9g0np44q8LyXgE4oq5V36l8F1QJRQGpHweZmB6ZyxkGUPPOxsfunw8RZKgHRO8c2J2OuItfrsTlIp4DZS8j7-fkAc7yBtvvCUkyqtCwhf-d2AKgJJlbaFEGuhUM3nqkNrF6qd31-PW-PHtG54uGEC7imRPwUAHHrQDEOhHf0TwRTiIPwj4LVHpwvzVqX81z6exAOrebiGmf34_dKWOnZY3lEsq8R2fh6zQNi_m_5u8UqX7QCgGw2"/>
+</div>
+<h1 class="text-headline-md font-headline-md font-bold text-on-surface">Bună dimineața</h1>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full glass-pill hover:bg-surface-container-high transition-colors text-primary relative">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+</header>
+<main class="px-container-margin pt-4 flex flex-col gap-section-spacing">
+<!-- Header Section -->
+<section>
+<h2 class="text-display-lg-mobile font-display-lg-mobile text-on-surface mb-2">Clase</h2>
+<p class="text-body-md font-body-md text-on-surface-variant">Rezervă-ți locul la clasele preferate.</p>
+</section>
+<!-- Day Filter Chips -->
+<section class="w-full -mx-container-margin px-container-margin overflow-x-auto hide-scrollbar">
+<div class="flex gap-3 min-w-max pb-2">
+<!-- Selected Day -->
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl bg-primary text-on-primary shadow-[0_0_15px_rgba(241,90,35,0.4)] transition-transform active:scale-95">
+<span class="text-label-sm font-label-sm uppercase opacity-80">Lu</span>
+<span class="text-headline-sm font-headline-sm mt-1">12</span>
+</button>
+<!-- Unselected Days -->
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Ma</span>
+<span class="text-headline-sm font-headline-sm mt-1">13</span>
+</button>
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Mi</span>
+<span class="text-headline-sm font-headline-sm mt-1">14</span>
+</button>
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Jo</span>
+<span class="text-headline-sm font-headline-sm mt-1">15</span>
+</button>
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Vi</span>
+<span class="text-headline-sm font-headline-sm mt-1">16</span>
+</button>
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Sa</span>
+<span class="text-headline-sm font-headline-sm mt-1">17</span>
+</button>
+<button class="flex flex-col items-center justify-center w-14 h-16 rounded-xl glass-pill text-on-surface-variant hover:text-on-surface transition-all active:scale-95">
+<span class="text-label-sm font-label-sm uppercase">Du</span>
+<span class="text-headline-sm font-headline-sm mt-1">18</span>
+</button>
+</div>
+</section>
+<!-- Class List -->
+<section class="flex flex-col gap-4">
+<!-- Class Card 1: Spinning -->
+<div class="glass-panel rounded-xl p-glass-inner-padding flex flex-col gap-4 relative overflow-hidden">
+<!-- Abstract graphic element -->
+<div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-primary/10 blur-xl"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-body-md font-body-md text-primary font-bold">18:00</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">50 min</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-1">Spinning Intense</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                            Alexandru M.
+                        </p>
+</div>
+<div class="glass-pill px-3 py-1 rounded-full border border-primary/30 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-label-sm font-label-sm text-primary">12 locuri</span>
+</div>
+</div>
+<div class="flex justify-between items-center mt-2 z-10">
+<div class="flex -space-x-2">
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-surface object-cover" data-alt="A small circular avatar showing a sweaty face of a gym member post-workout. High contrast, dark background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAqZXrXXNz5eg5tfP9LjiwFbBSB-JmUicRrI6GiHHHHjAWazUowXyvAgw66rmWLOTe86zPiSfV0n1ryvNQKPk75jhxjzYV6g1UBbanoHSra6-WEGRLMcTimZycLYw3GZ4ss0fwJYa0k_zkvo3JKaMA7HP4ut6FJtJFbK4dE6LeHWvi_CKP1L9Oq-jRUXcl_Us6l5QAmW0ANyxo2i412AnSb52S6Z-ZhsO9qQiAMXusqqX0VyrO9GQlAMTjgLU5V_n4eYkrRXpju-fkZ"/>
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-surface object-cover" data-alt="A small circular avatar showing a fit woman with a ponytail against a dark gym background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCNS2e068ExuwxnGCAWShe7Z3TQhi7FFTOcNRaQMEisjDwAFWSRTIp6mo55inyOqBeNXXp9UhMiUL4gOLHnv3jqoBmy1YtX9nHW9PXYRgAbWWdQ8_YUN1KvJEzHSgDepbpPmKQpP39o4fXN4ntaOsuXuyfJ90Vkwg9QMPCRt3uEN2cz60PVC5OpX6nyc5RfKg74xOXedKmjJ1I6ztQGKNoLw0nDZ1C7zaGCn_dmAakh22QUIX3cR9zNii3WSWcd7Wo8YDdwciq4nk_"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-high flex items-center justify-center text-[10px] text-on-surface-variant">+9</div>
+</div>
+<button class="bg-primary/10 text-primary border border-primary/30 hover:bg-primary hover:text-on-primary transition-all px-4 py-2 rounded-lg text-label-bold font-label-bold">
+                        Rezervă un loc
+                    </button>
+</div>
+</div>
+<!-- Class Card 2: CrossFit -->
+<div class="glass-panel rounded-xl p-glass-inner-padding flex flex-col gap-4 relative overflow-hidden">
+<div class="absolute -right-10 -top-10 w-32 h-32 rounded-full bg-tertiary-container/20 blur-xl"></div>
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-body-md font-body-md text-on-surface font-bold">19:00</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">60 min</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-1">CrossFit WOD</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                            Mihai T.
+                        </p>
+</div>
+<div class="glass-pill px-3 py-1 rounded-full border border-tertiary-container/50 flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+<span class="text-label-sm font-label-sm text-tertiary">3 locuri</span>
+</div>
+</div>
+<div class="flex justify-between items-center mt-2 z-10">
+<div class="flex -space-x-2">
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-surface object-cover" data-alt="Small avatar of a muscular man looking determined. High contrast lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBt-zBJTHmc1P5YallubId7W0fPX2wnsyFF-icMZSsLT0QALg8p6ZJtGo1bMMssWKvByxK3kcwpb1ApQRiPuBcvXjrAajwTVzr4Se3LY7Lw8pHg_GF5AJv43NlighWzlXiO6mg6hbhlA5D8d-Y_0CjGQgh3dNmddlXE3REmxWHk8BpWTq119Rx4646Rqp7ESOZwN-Ju3z6eZ3ef_PQpsfMs4Z7MEfQR2eqTIukucSBGjfw9XsrVPYTUlTsMcr1q6ywl7XwpAbrDxZOd"/>
+<img alt="Member" class="w-8 h-8 rounded-full border-2 border-surface object-cover" data-alt="Small avatar of a fit person resting. Dark modern gym setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLQe68Qe_VeFagAgCJOd50whDpFh2N0qVEjPMGwLpj9it8W2GXVup_og4vEV5oFbWvP-t_Wrqn4LIzCqz1Vi1vDMmGxdmTX_Bm6Y1wY6wWZc5rpginUkLMPzsFwTGJhIFZj1yJrNaj6HJuZXBXnrH-ub1Ot7bWLAzqA_Z3OLpsAO92n0PcdCOfWjYJEQElZZeZpUNEDu-smAMCuSl3xBOgzv5oeusIIw6X5zOF1P6VxZMKulQ0prUYmzXkdVwxS8ZBSjRuNzxQiobS"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-high flex items-center justify-center text-[10px] text-on-surface-variant">+12</div>
+</div>
+<button class="bg-primary text-on-primary hover:bg-primary-fixed transition-all px-4 py-2 rounded-lg text-label-bold font-label-bold shadow-[0_4px_12px_rgba(241,90,35,0.2)]">
+                        Rezervă un loc
+                    </button>
+</div>
+</div>
+<!-- Class Card 3: Pilates -->
+<div class="glass-panel rounded-xl p-glass-inner-padding flex flex-col gap-4 relative overflow-hidden opacity-70">
+<div class="flex justify-between items-start z-10">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-body-md font-body-md text-on-surface-variant font-bold">20:15</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="text-label-sm font-label-sm text-on-surface-variant">45 min</span>
+</div>
+<h3 class="text-headline-sm font-headline-sm text-on-surface-variant mb-1">Pilates Flow</h3>
+<p class="text-label-sm font-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">person</span>
+                            Elena D.
+                        </p>
+</div>
+<div class="glass-pill px-3 py-1 rounded-full border border-error/30 flex items-center gap-1 bg-error/10">
+<span class="text-label-sm font-label-sm text-error">Ocupat</span>
+</div>
+</div>
+<div class="flex justify-between items-center mt-2 z-10">
+<div class="text-label-sm font-label-sm text-on-surface-variant">
+                        15/15 participanți
+                    </div>
+<button class="bg-surface-container-high text-on-surface-variant border border-outline-variant/30 px-4 py-2 rounded-lg text-label-bold font-label-bold">
+                        Listă așteptare
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Nav Bar -->
+<nav class="fixed bottom-6 left-0 right-0 mx-auto w-[92%] max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container/40 dark:bg-surface-container-low/40 backdrop-blur-xl shadow-2xl bg-gradient-to-br from-white/10 to-transparent shadow-glass-inner box-shadow:inset_0_1px_1px_rgba(255,255,255,0.2) rounded-full border border-white/20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-label-sm font-label-sm">Acasă</span>
+</a>
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary bg-primary/10 rounded-full p-2 shadow-[0_0_15px_rgba(241,90,35,0.3)] hover:text-primary transition-colors scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">fitness_center</span>
+<span class="text-label-sm font-label-sm">Clase</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">exercise</span>
+<span class="text-label-sm font-label-sm">Antrenamente</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">card_membership</span>
+<span class="text-label-sm font-label-sm">Abonamente</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 0;">person</span>
+<span class="text-label-sm font-label-sm">Profil</span>
+</a>
+</nav>
+</body></html>

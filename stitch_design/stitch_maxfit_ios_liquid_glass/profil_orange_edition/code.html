@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="ro"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Profil - StayFit Gym</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e3e2e2",
+                        "on-primary-fixed-variant": "#4a1b09",
+                        "secondary": "#c6c6c6",
+                        "tertiary-container": "#883700",
+                        "on-primary-fixed": "#3a1405",
+                        "secondary-fixed-dim": "#c6c6c6",
+                        "surface-container-highest": "#2a2a2a",
+                        "tertiary-fixed": "#ffdbcb",
+                        "primary-container": "#4a1b09",
+                        "on-surface": "#e2e2ea",
+                        "surface-container-low": "#181818",
+                        "inverse-surface": "#e2e2ea",
+                        "surface": "#121212",
+                        "surface-tint": "#F15A23",
+                        "on-tertiary": "#562000",
+                        "on-error": "#690005",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#793000",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#2f3131",
+                        "outline": "#8d909d",
+                        "outline-variant": "#424752",
+                        "on-primary-container": "#ffdbcc",
+                        "secondary-container": "#484949",
+                        "surface-container-high": "#242424",
+                        "on-error-container": "#ffdad6",
+                        "surface-container": "#1c1c1c",
+                        "surface-container-lowest": "#0a0a0a",
+                        "surface-variant": "#2a2a2a",
+                        "inverse-on-surface": "#2e3036",
+                        "on-tertiary-container": "#ffb089",
+                        "surface-bright": "#37393f",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#ffdbcc",
+                        "on-secondary-fixed": "#1a1c1c",
+                        "primary": "#F15A23",
+                        "on-tertiary-fixed": "#341100",
+                        "primary-fixed-dim": "#ffb399",
+                        "on-secondary-fixed-variant": "#464747",
+                        "inverse-primary": "#a63811",
+                        "surface-dim": "#121212",
+                        "on-background": "#e2e2ea",
+                        "tertiary": "#ffb692",
+                        "on-secondary-container": "#b8b8b8",
+                        "on-surface-variant": "#c3c6d4",
+                        "tertiary-fixed-dim": "#ffb692",
+                        "background": "#121212"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "glass-inner-padding": "24px",
+                        "section-spacing": "32px",
+                        "stack-gap": "16px",
+                        "container-margin": "20px",
+                        "element-padding": "12px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Inter"],
+                        "label-bold": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "25px", "fontWeight": "600" }],
+                        "label-bold": ["13px", { "lineHeight": "18px", "fontWeight": "600" }],
+                        "display-lg": ["34px", { "lineHeight": "41px", "letterSpacing": "-0.5px", "fontWeight": "800" }],
+                        "body-lg": ["17px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "800" }],
+                        "body-md": ["15px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "30px", "letterSpacing": "0px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #121212; /* surface */
+            color: #e2e2ea; /* on-surface */
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.2), 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card {
+            background: rgba(42, 42, 42, 0.4); /* surface-variant with opacity */
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 0.5px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Ambient Blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            z-index: -1;
+            animation: float 20s infinite ease-in-out alternate;
+        }
+        .blob-1 {
+            width: 300px;
+            height: 300px;
+            background: #F15A23; /* primary */
+            top: -100px;
+            right: -100px;
+        }
+        .blob-2 {
+            width: 250px;
+            height: 250px;
+            background: #b33d14; /* darker orange */
+            bottom: 20%;
+            left: -50px;
+            animation-delay: -5s;
+        }
+        .blob-3 {
+            width: 200px;
+            height: 200px;
+            background: #ff8552; /* lighter orange */
+            top: 40%;
+            right: -20px;
+            animation-delay: -10s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* Nav Tab Glow */
+        .nav-glow {
+            box-shadow: 0 0 15px rgba(241, 90, 35, 0.3); /* primary color with opacity */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="antialiased min-h-screen relative pb-32">
+<!-- Ambient Background -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none">
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+</div>
+<!-- Main Content Canvas -->
+<main class="relative z-10 px-container-margin pt-element-padding flex flex-col gap-stack-gap">
+<!-- Header / Member Card -->
+<header class="w-full mt-4">
+<div class="glass-panel rounded-xl p-glass-inner-padding flex flex-col gap-4 relative overflow-hidden">
+<!-- Inner decorative glow -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
+<div class="flex items-center gap-4 relative z-10">
+<div class="w-16 h-16 rounded-full bg-surface-container overflow-hidden border-2 border-primary/30 flex-shrink-0">
+<img alt="Profile Picture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTbhTEC8_BfFeG_ehUmF4vKCcQe4lPi46HW6b6C2iyFndgH3RQugd6P83TAm_YAhe6Uwe9IEI80UQHWSZA9wPqCO9TBz9KKOZZ5Nz-9O6k8RM0tWvl5ugLqWIqVsKkFG5P_ydnpGxkmvCm_eoi6tYNNO6iHUJBTKHajtB87GrhlCm1juS2rmzoAxYcURUjzvgQFY1M_QR0AYZ8ewR79Qq3nMsZ2TTMn0Vp6tE5Rf4RM0jAKcx8PLF0vipgJ1xHWnQNV4cpFNSyLBPb"/>
+</div>
+<div class="flex-1">
+<h1 class="text-headline-sm font-headline-sm text-on-surface">Alexandru Paun</h1>
+<div class="inline-flex items-center gap-1 mt-1 bg-tertiary-container/30 px-2 py-1 rounded-full border border-tertiary/20">
+<span class="material-symbols-outlined text-tertiary text-[14px]" style="font-variation-settings: 'FILL' 1;">stars</span>
+<span class="text-label-sm font-label-sm text-tertiary font-medium uppercase tracking-wide">Membru Premium</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 mt-4 relative z-10">
+<div class="glass-card rounded-lg p-3 text-center">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Antrenamente</p>
+<p class="text-headline-md font-headline-md text-primary">124</p>
+</div>
+<div class="glass-card rounded-lg p-3 text-center">
+<p class="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-1">Status Cont</p>
+<p class="text-headline-sm font-headline-sm text-tertiary mt-1">Activ</p>
+</div>
+</div>
+</div>
+</header>
+<!-- QR Check-in Section -->
+<section class="w-full">
+<div class="glass-panel rounded-xl p-glass-inner-padding flex flex-col items-center justify-center gap-6 relative">
+<div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent rounded-xl pointer-events-none"></div>
+<h2 class="text-headline-sm font-headline-sm text-on-surface text-center">Check-in Rapid</h2>
+<p class="text-body-md font-body-md text-on-surface-variant text-center max-w-[250px]">Scanează acest cod la recepție pentru acces instant.</p>
+<div class="bg-white p-4 rounded-xl shadow-[0_0_30px_rgba(255,255,255,0.1)] relative group cursor-pointer transition-transform duration-300 hover:scale-105">
+<!-- Placeholder for actual QR code image -->
+<div class="w-48 h-48 bg-gray-200 flex items-center justify-center rounded-lg border border-gray-300">
+<span class="material-symbols-outlined text-gray-400 text-6xl">qr_code_2</span>
+</div>
+<div class="absolute inset-0 border-2 border-primary rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+</div>
+<button class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-full border border-outline-variant/30 text-primary hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+<span class="text-label-bold font-label-bold">Reîncarcă Codul</span>
+</button>
+</div>
+</section>
+<!-- Quick Actions Bento Grid -->
+<section class="w-full">
+<h3 class="text-label-bold font-label-bold text-on-surface-variant uppercase tracking-widest mb-4 pl-2">Acțiuni Rapide</h3>
+<div class="grid grid-cols-2 gap-stack-gap">
+<!-- Action 1 -->
+<button class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-3 aspect-square hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">history</span>
+</div>
+<span class="text-label-bold font-label-bold text-on-surface text-center">Istoric Intrări</span>
+</button>
+<!-- Action 2 -->
+<button class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-3 aspect-square hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-tertiary/10 flex items-center justify-center group-hover:bg-tertiary/20 transition-colors">
+<span class="material-symbols-outlined text-tertiary text-2xl" style="font-variation-settings: 'FILL' 1;">credit_card</span>
+</div>
+<span class="text-label-bold font-label-bold text-on-surface text-center">Plăți &amp; Facturi</span>
+</button>
+<!-- Action 3 -->
+<button class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-3 aspect-square hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
+<span class="material-symbols-outlined text-secondary text-2xl" style="font-variation-settings: 'FILL' 1;">settings</span>
+</div>
+<span class="text-label-bold font-label-bold text-on-surface text-center">Setări Cont</span>
+</button>
+<!-- Action 4 -->
+<button class="glass-card rounded-xl p-4 flex flex-col items-center justify-center gap-3 aspect-square hover:bg-surface-container-high transition-colors group">
+<div class="w-12 h-12 rounded-full bg-error/10 flex items-center justify-center group-hover:bg-error/20 transition-colors">
+<span class="material-symbols-outlined text-error text-2xl" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+<span class="text-label-bold font-label-bold text-on-surface text-center">Suport</span>
+</button>
+</div>
+</section>
+<!-- Contact Section -->
+<section class="w-full mb-section-spacing">
+<div class="glass-panel rounded-xl p-glass-inner-padding">
+<h3 class="text-headline-sm font-headline-sm text-on-surface mb-4">Contactează-ne</h3>
+<div class="flex flex-col gap-3">
+<a class="glass-card rounded-lg p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors" href="tel:+40123456789">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">call</span>
+</div>
+<div class="flex-1">
+<p class="text-body-md font-body-md text-on-surface font-medium">Sună Recepția</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">+40 123 456 789</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+<a class="glass-card rounded-lg p-4 flex items-center gap-4 hover:bg-surface-container-high transition-colors" href="mailto:contact@stayfit.ro">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">mail</span>
+</div>
+<div class="flex-1">
+<p class="text-body-md font-body-md text-on-surface font-medium">Trimite Email</p>
+<p class="text-label-sm font-label-sm text-on-surface-variant">contact@stayfit.ro</p>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+</a>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Shell (Rendered based on JSON and rules) -->
+<nav class="md:hidden fixed bottom-6 left-0 right-0 mx-auto w-[92%] max-w-md z-50 flex justify-around items-center px-4 py-2 bg-surface-container/40 dark:bg-surface-container-low/40 backdrop-blur-xl shadow-2xl bg-gradient-to-br from-white/10 to-transparent rounded-full border border-white/20" style="box-shadow: inset 0 1px 1px rgba(255,255,255,0.2), 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+<!-- Acasă -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">home</span>
+<span class="text-[10px] font-label-sm mt-1">Acasă</span>
+</a>
+<!-- Clase -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">fitness_center</span>
+<span class="text-[10px] font-label-sm mt-1">Clase</span>
+</a>
+<!-- Antrenamente -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">exercise</span>
+<span class="text-[10px] font-label-sm mt-1">Antrenamente</span>
+</a>
+<!-- Abonamente -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant p-2 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined text-2xl">card_membership</span>
+<span class="text-[10px] font-label-sm mt-1">Abonamente</span>
+</a>
+<!-- Profil (ACTIVE) -->
+<a class="flex flex-col items-center justify-center text-primary dark:text-primary bg-primary/10 rounded-full px-4 py-2 nav-glow transform scale-90 transition-all duration-300 ease-out" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">person</span>
+<span class="text-[10px] font-label-sm mt-1 font-medium">Profil</span>
+</a>
+</nav>
+</body></html>

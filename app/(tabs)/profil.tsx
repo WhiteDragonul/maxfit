@@ -1,140 +1,271 @@
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import { CONTACT } from '@/constants/data';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Blobs from '@/components/Blobs';
+import GlassCard from '@/components/GlassCard';
+import { Colors, Spacing, Type } from '@/constants/theme';
 
-// Date demo — vor fi înlocuite când conectăm aplicația la un backend cu conturi reale.
-const MEMBRU = {
-  nume: 'Membru MaxFit',
-  abonament: 'Full Access',
-  valabilPana: '11 iulie 2026',
-  vizteLunaAceasta: 9,
-};
+const ACTIUNI = [
+  { id: 'istoric', label: 'Istoric Intrări', icon: 'history' as const, tint: Colors.primary, bg: 'rgba(241,90,35,0.1)' },
+  { id: 'plati', label: 'Plăți & Facturi', icon: 'credit-card' as const, tint: Colors.tertiary, bg: 'rgba(255,182,146,0.1)' },
+  { id: 'setari', label: 'Setări Cont', icon: 'settings' as const, tint: Colors.secondary, bg: 'rgba(198,198,198,0.1)' },
+  { id: 'suport', label: 'Suport', icon: 'support-agent' as const, tint: Colors.error, bg: 'rgba(255,180,171,0.1)' },
+];
 
 export default function Profil() {
+  const insets = useSafeAreaInsets();
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: Spacing.md, gap: Spacing.md }}>
-      <View style={styles.headerCard}>
-        <View style={styles.avatar}>
-          <Ionicons name="person" size={36} color={Colors.text} />
-        </View>
-        <Text style={styles.nume}>{MEMBRU.nume}</Text>
-        <View style={styles.badgeAbonament}>
-          <Ionicons name="card" size={14} color={Colors.primary} />
-          <Text style={styles.badgeText}>{MEMBRU.abonament}</Text>
-        </View>
-      </View>
-
-      <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statNr}>{MEMBRU.vizteLunaAceasta}</Text>
-          <Text style={styles.statLabel}>vizite luna aceasta</Text>
-        </View>
-        <View style={styles.statCard}>
-          <Text style={styles.statNr}>{MEMBRU.valabilPana}</Text>
-          <Text style={styles.statLabel}>abonament valabil până la</Text>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Check-in la sală</Text>
-        <Text style={styles.cardText}>
-          Prezintă acest cod la recepție pentru acces rapid.
-        </Text>
-        <View style={styles.qrPlaceholder}>
-          <Ionicons name="qr-code" size={120} color={Colors.text} />
-          <Text style={styles.qrText}>ID membru: MF-2026-0001</Text>
-        </View>
-      </View>
-
-      <TouchableOpacity style={styles.actiune} onPress={() => Linking.openURL(CONTACT.site)}>
-        <Ionicons name="globe" size={20} color={Colors.primary} />
-        <Text style={styles.actiuneText}>maxfit.ro</Text>
-        <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.actiune}
-        onPress={() => Linking.openURL(`tel:${CONTACT.telefon.replace(/\s/g, '')}`)}
+    <View style={styles.container}>
+      <Blobs />
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: Spacing.containerMargin,
+          paddingTop: insets.top + 16,
+          paddingBottom: 128,
+          gap: Spacing.stackGap,
+        }}
+        showsVerticalScrollIndicator={false}
       >
-        <Ionicons name="call" size={20} color={Colors.primary} />
-        <Text style={styles.actiuneText}>Sună la recepție</Text>
-        <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.actiune}
-        onPress={() => Linking.openURL(`mailto:${CONTACT.email}`)}
-      >
-        <Ionicons name="mail" size={20} color={Colors.primary} />
-        <Text style={styles.actiuneText}>Trimite-ne un email</Text>
-        <Ionicons name="chevron-forward" size={18} color={Colors.textSecondary} />
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Member Card */}
+        <GlassCard radius={12} padding={Spacing.glassInnerPadding}>
+          <View style={styles.memberRow}>
+            <View style={styles.avatar}>
+              <MaterialIcons name="person" size={32} color={Colors.onSurfaceVariant} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.memberName}>Alexandru Paun</Text>
+              <View style={styles.premiumBadge}>
+                <MaterialIcons name="stars" size={14} color={Colors.tertiary} />
+                <Text style={styles.premiumBadgeText}>MEMBRU PREMIUM</Text>
+              </View>
+            </View>
+          </View>
+          <View style={styles.memberStats}>
+            <View style={styles.memberStatCard}>
+              <Text style={styles.memberStatLabel}>ANTRENAMENTE</Text>
+              <Text style={[styles.memberStatValue, { color: Colors.primary }]}>124</Text>
+            </View>
+            <View style={styles.memberStatCard}>
+              <Text style={styles.memberStatLabel}>STATUS CONT</Text>
+              <Text style={[styles.memberStatValueSm, { color: Colors.tertiary }]}>Activ</Text>
+            </View>
+          </View>
+        </GlassCard>
+
+        {/* QR Check-in */}
+        <GlassCard radius={12} padding={Spacing.glassInnerPadding}>
+          <View style={{ alignItems: 'center', gap: 24 }}>
+            <Text style={styles.qrTitle}>Check-in Rapid</Text>
+            <Text style={styles.qrSubtitle}>Scanează acest cod la recepție pentru acces instant.</Text>
+            <View style={styles.qrFrame}>
+              <View style={styles.qrInner}>
+                <MaterialIcons name="qr-code-2" size={120} color="#9ca3af" />
+              </View>
+            </View>
+            <TouchableOpacity style={styles.refreshBtn} activeOpacity={0.8}>
+              <MaterialIcons name="refresh" size={20} color={Colors.primary} />
+              <Text style={styles.refreshBtnText}>Reîncarcă Codul</Text>
+            </TouchableOpacity>
+          </View>
+        </GlassCard>
+
+        {/* Quick Actions Bento Grid */}
+        <View>
+          <Text style={styles.sectionLabel}>ACȚIUNI RAPIDE</Text>
+          <View style={styles.actionsGrid}>
+            {ACTIUNI.map((a) => (
+              <TouchableOpacity key={a.id} style={styles.actionCard} activeOpacity={0.8}>
+                <View style={[styles.actionIcon, { backgroundColor: a.bg }]}>
+                  <MaterialIcons name={a.icon} size={24} color={a.tint} />
+                </View>
+                <Text style={styles.actionLabel}>{a.label}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        {/* Contact */}
+        <GlassCard radius={12} padding={Spacing.glassInnerPadding} style={{ marginBottom: Spacing.sectionSpacing }}>
+          <Text style={styles.contactTitle}>Contactează-ne</Text>
+          <View style={{ gap: 12 }}>
+            <TouchableOpacity
+              style={styles.contactRow}
+              activeOpacity={0.8}
+              onPress={() => Linking.openURL('tel:+40123456789')}
+            >
+              <View style={styles.contactIcon}>
+                <MaterialIcons name="call" size={22} color={Colors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.contactLabel}>Sună Recepția</Text>
+                <Text style={styles.contactValue}>+40 123 456 789</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color={Colors.onSurfaceVariant} />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.contactRow}
+              activeOpacity={0.8}
+              onPress={() => Linking.openURL('mailto:contact@maxfit.ro')}
+            >
+              <View style={styles.contactIcon}>
+                <MaterialIcons name="mail" size={22} color={Colors.primary} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.contactLabel}>Trimite Email</Text>
+                <Text style={styles.contactValue}>contact@maxfit.ro</Text>
+              </View>
+              <MaterialIcons name="chevron-right" size={24} color={Colors.onSurfaceVariant} />
+            </TouchableOpacity>
+          </View>
+        </GlassCard>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  headerCard: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
+  memberRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: Colors.primary,
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: Colors.surfaceContainer,
+    borderWidth: 2,
+    borderColor: 'rgba(241,90,35,0.3)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing.sm,
   },
-  nume: { color: Colors.text, fontSize: 18, fontWeight: '700' },
-  badgeAbonament: {
+  memberName: { ...Type.headlineSm, color: Colors.onSurface },
+  premiumBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.xs,
-    backgroundColor: Colors.surfaceLight,
-    paddingHorizontal: Spacing.sm,
+    gap: 4,
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(136,55,0,0.3)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,182,146,0.2)',
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: Radius.pill,
-    marginTop: Spacing.sm,
+    borderRadius: 999,
+    marginTop: 4,
   },
-  badgeText: { color: Colors.text, fontSize: 12, fontWeight: '600' },
-  statsRow: { flexDirection: 'row', gap: Spacing.md },
-  statCard: {
+  premiumBadgeText: {
+    ...Type.labelSm,
+    fontFamily: 'Inter_600SemiBold',
+    color: Colors.tertiary,
+    letterSpacing: 0.5,
+  },
+  memberStats: { flexDirection: 'row', gap: 16, marginTop: 16 },
+  memberStatCard: {
     flex: 1,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
+    backgroundColor: 'rgba(42,42,42,0.4)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 8,
+    padding: 12,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
-  statNr: { color: Colors.primary, fontSize: 18, fontWeight: '800', textAlign: 'center' },
-  statLabel: { color: Colors.textSecondary, fontSize: 12, textAlign: 'center', marginTop: 4 },
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  memberStatLabel: {
+    ...Type.labelSm,
+    color: Colors.onSurfaceVariant,
+    letterSpacing: 1,
+    marginBottom: 4,
   },
-  cardTitle: { color: Colors.text, fontSize: 16, fontWeight: '700' },
-  cardText: { color: Colors.textSecondary, fontSize: 13, marginTop: 4 },
-  qrPlaceholder: { alignItems: 'center', paddingVertical: Spacing.lg },
-  qrText: { color: Colors.textSecondary, fontSize: 13, marginTop: Spacing.sm },
-  actiune: {
+  memberStatValue: { ...Type.headlineMd },
+  memberStatValueSm: { ...Type.headlineSm, marginTop: 2 },
+  qrTitle: { ...Type.headlineSm, color: Colors.onSurface, textAlign: 'center' },
+  qrSubtitle: {
+    ...Type.bodyMd,
+    color: Colors.onSurfaceVariant,
+    textAlign: 'center',
+    maxWidth: 250,
+  },
+  qrFrame: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#ffffff',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.1,
+    shadowRadius: 30,
+    elevation: 4,
+  },
+  qrInner: {
+    width: 192,
+    height: 192,
+    backgroundColor: '#e5e7eb',
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  refreshBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.md,
-    padding: Spacing.md,
+    gap: 8,
+    backgroundColor: Colors.surfaceContainerHigh,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 999,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: 'rgba(66,71,82,0.3)',
   },
-  actiuneText: { color: Colors.text, fontSize: 15, flex: 1 },
+  refreshBtnText: { ...Type.labelBold, color: Colors.primary },
+  sectionLabel: {
+    ...Type.labelBold,
+    color: Colors.onSurfaceVariant,
+    letterSpacing: 2,
+    marginBottom: 16,
+    paddingLeft: 8,
+  },
+  actionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.stackGap,
+  },
+  actionCard: {
+    width: '47%',
+    flexGrow: 1,
+    aspectRatio: 1,
+    backgroundColor: 'rgba(42,42,42,0.4)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+    padding: 16,
+  },
+  actionIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionLabel: { ...Type.labelBold, color: Colors.onSurface, textAlign: 'center' },
+  contactTitle: { ...Type.headlineSm, color: Colors.onSurface, marginBottom: 16 },
+  contactRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: 'rgba(42,42,42,0.4)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'rgba(255,255,255,0.1)',
+    borderRadius: 8,
+    padding: 16,
+  },
+  contactIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(241,90,35,0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  contactLabel: { ...Type.bodyMd, fontFamily: 'Inter_600SemiBold', color: Colors.onSurface },
+  contactValue: { ...Type.labelSm, color: Colors.onSurfaceVariant, marginTop: 2 },
 });

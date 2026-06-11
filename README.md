@@ -4,11 +4,15 @@ Aplicația oficială MaxFit (maxfit.ro), sala de fitness din Galați. Construit�
 
 ## Funcționalități
 
-- **Acasă** — clasele zilei, programul sălii, contact
-- **Clase** — orar complet cu filtrare pe zile și rezervare de locuri
-- **Antrenamente** — planuri de antrenament pe grupe musculare
-- **Abonamente** — prețuri și beneficii
-- **Profil** — abonament, vizite, cod de check-in
+- **Acasă** — banner promo, statistici, clasele zilei
+- **Clase** — orar cu filtrare pe zile, rezervare de locuri + confirmare în bottom sheet
+- **Antrenamente** — planuri pe grupe musculare, carduri expandabile
+- **Abonamente** — 3 pachete cu prețuri și beneficii
+- **Profil** — card de membru, QR check-in, acțiuni rapide, contact
+
+## Design
+
+Design "Liquid Vitality" (iOS liquid glass) generat cu Stitch AI — exportul original (HTML + capturi + design system) e păstrat în `stitch_design/` ca referință. Token-urile exacte (culori, fonturi Inter, spacing) sunt în `constants/theme.ts`, iar efectul de sticlă e implementat în `components/GlassCard.tsx` cu expo-blur + expo-linear-gradient.
 
 ## Rulare locală
 
@@ -39,6 +43,5 @@ Identificatori configurați în `app.json`:
 ## De înlocuit înainte de publicare
 
 - `assets/icon.png`, `assets/splash.png`, `assets/adaptive-icon.png` — sunt placeholder, pune logo-ul real MaxFit (icon: 1024×1024 px)
-- Datele de contact din `constants/data.ts` (telefon, adresă exactă)
-- Prețurile și clasele din `constants/data.ts` cu cele reale
-- Datele membrului din `app/(tabs)/profil.tsx` sunt demo — pentru conturi reale e nevoie de un backend
+- Conținutul ecranelor (clase, prețuri, telefon, nume membru) e cel demo din design-ul Stitch — se modifică direct în fișierele din `app/(tabs)/`
+- Pentru conturi reale, rezervări salvate și QR funcțional e nevoie de un backend

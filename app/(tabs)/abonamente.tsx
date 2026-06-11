@@ -1,81 +1,210 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import { ABONAMENTE, CONTACT } from '@/constants/data';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
+import Blobs from '@/components/Blobs';
+import GlassCard from '@/components/GlassCard';
+import TopBar from '@/components/TopBar';
+import { Colors, Spacing, Type, Glass } from '@/constants/theme';
+
+interface Beneficiu {
+  text: string;
+  inclus: boolean;
+}
+
+interface Plan {
+  id: string;
+  nume: string;
+  descriere: string;
+  pret: number;
+  beneficii: Beneficiu[];
+  popular?: boolean;
+  fire?: boolean;
+}
+
+const PLANURI: Plan[] = [
+  {
+    id: 'basic',
+    nume: 'Basic',
+    descriere: 'Acces esențial la facilități',
+    pret: 120,
+    beneficii: [
+      { text: 'Acces gym nelimitat', inclus: true },
+      { text: '1 clasă de grup inclusă', inclus: true },
+      { text: 'Acces zonă SPA', inclus: false },
+    ],
+  },
+  {
+    id: 'full',
+    nume: 'Full Access',
+    descriere: 'Echilibrul perfect pentru progres',
+    pret: 180,
+    popular: true,
+    fire: true,
+    beneficii: [
+      { text: 'Acces gym nelimitat', inclus: true },
+      { text: 'Clase de grup nelimitate', inclus: true },
+      { text: 'Acces zonă SPA (weekend)', inclus: true },
+      { text: '1 Evaluare InBody / lună', inclus: true },
+    ],
+  },
+  {
+    id: 'premium',
+    nume: 'Premium',
+    descriere: 'Experiența VIP completă',
+    pret: 280,
+    beneficii: [
+      { text: 'Acces gym 24/7', inclus: true },
+      { text: 'Clase premium incluse', inclus: true },
+      { text: 'Acces zonă SPA nelimitat', inclus: true },
+      { text: 'Sesiuni cu Antrenor (2/lună)', inclus: true },
+      { text: 'Parcare VIP asigurată', inclus: true },
+    ],
+  },
+];
 
 export default function Abonamente() {
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: Spacing.md, gap: Spacing.md }}>
-      {ABONAMENTE.map((ab) => (
-        <View key={ab.id} style={[styles.card, ab.popular && styles.cardPopular]}>
-          {ab.popular && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>CEL MAI POPULAR</Text>
-            </View>
-          )}
-          <Text style={styles.nume}>{ab.nume}</Text>
-          <View style={styles.pretRow}>
-            <Text style={styles.pret}>{ab.pret}</Text>
-            <Text style={styles.pretLuna}> lei / lună</Text>
-          </View>
-          <View style={styles.beneficii}>
-            {ab.beneficii.map((b) => (
-              <View key={b} style={styles.beneficiu}>
-                <Ionicons name="checkmark-circle" size={18} color={Colors.success} />
-                <Text style={styles.beneficiuText}>{b}</Text>
-              </View>
-            ))}
-          </View>
-          <TouchableOpacity
-            style={[styles.buton, ab.popular && styles.butonPopular]}
-            onPress={() => Linking.openURL(`tel:${CONTACT.telefon.replace(/\s/g, '')}`)}
-          >
-            <Text style={styles.butonText}>Sună pentru abonare</Text>
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <Blobs />
+      <TopBar />
+      <ScrollView
+        contentContainerStyle={{
+          paddingHorizontal: Spacing.containerMargin,
+          paddingTop: 16,
+          paddingBottom: 128,
+          gap: Spacing.sectionSpacing,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View>
+          <Text style={styles.pageTitle}>Alege</Text>
+          <Text style={[styles.pageTitle, styles.pageTitleAccent]}>Abonamentul</Text>
+          <Text style={styles.pageSubtitle}>
+            Deblochează-ți potențialul maxim cu planurile noastre premium.
+          </Text>
         </View>
-      ))}
-      <Text style={styles.nota}>
-        Abonamentele se pot achiziționa direct la recepția sălii din Galați. Studenții și elevii
-        beneficiază de reducere cu carnetul vizat.
-      </Text>
-    </ScrollView>
+
+        <View style={{ gap: Spacing.stackGap }}>
+          {PLANURI.map((plan) => (
+            <GlassCard
+              key={plan.id}
+              radius={12}
+              padding={Spacing.glassInnerPadding}
+              gradient={plan.popular ? Glass.gradientPopular : Glass.gradient}
+              borderColor={plan.popular ? Glass.borderPopular : Glass.border}
+              style={plan.popular ? styles.popularCard : undefined}
+            >
+              {plan.popular && (
+                <View style={styles.popularBadge}>
+                  <Text style={styles.popularBadgeText}>CEL MAI POPULAR</Text>
+                </View>
+              )}
+              <View style={[styles.planTop, plan.popular && { paddingTop: 8 }]}>
+                <View style={{ flex: 1 }}>
+                  <View style={styles.planNameRow}>
+                    <Text style={styles.planName}>{plan.nume}</Text>
+                    {plan.fire && (
+                      <MaterialIcons name="local-fire-department" size={18} color={Colors.tertiary} />
+                    )}
+                  </View>
+                  <Text style={styles.planDesc}>{plan.descriere}</Text>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <Text style={styles.planPrice}>
+                    {plan.pret} <Text style={styles.planPriceUnit}>lei</Text>
+                  </Text>
+                  <Text style={styles.planPerMonth}>/ lună</Text>
+                </View>
+              </View>
+              <View style={[styles.divider, plan.popular && { backgroundColor: 'rgba(241,90,35,0.2)' }]} />
+              <View style={{ gap: 12 }}>
+                {plan.beneficii.map((b) => (
+                  <View key={b.text} style={styles.benefitRow}>
+                    <MaterialIcons
+                      name={b.inclus ? 'check-circle' : 'cancel'}
+                      size={20}
+                      color={b.inclus ? Colors.primary : 'rgba(195,198,212,0.5)'}
+                    />
+                    <Text style={[styles.benefitText, !b.inclus && styles.benefitTextExcluded]}>
+                      {b.text}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+              <TouchableOpacity
+                style={plan.popular ? styles.ctaPrimary : styles.ctaOutline}
+                activeOpacity={0.85}
+              >
+                <Text style={plan.popular ? styles.ctaPrimaryText : styles.ctaOutlineText}>
+                  Alege {plan.nume}
+                </Text>
+              </TouchableOpacity>
+            </GlassCard>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  card: {
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    padding: Spacing.lg,
-    borderWidth: 1,
-    borderColor: Colors.border,
+  pageTitle: { ...Type.displayLgMobile, color: Colors.white },
+  pageTitleAccent: {
+    color: Colors.primary,
+    textShadowColor: 'rgba(241,90,35,0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
   },
-  cardPopular: { borderColor: Colors.primary, borderWidth: 2 },
-  badge: {
-    backgroundColor: Colors.primary,
-    alignSelf: 'flex-start',
-    paddingHorizontal: Spacing.sm,
+  pageSubtitle: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginTop: 8 },
+  popularCard: { transform: [{ scale: 1.02 }], zIndex: 10 },
+  popularBadge: {
+    position: 'absolute',
+    top: -Spacing.glassInnerPadding,
+    right: -Spacing.glassInnerPadding,
+    backgroundColor: Colors.tertiaryContainer,
+    paddingHorizontal: 12,
     paddingVertical: 4,
-    borderRadius: Radius.sm,
-    marginBottom: Spacing.sm,
+    borderBottomLeftRadius: 8,
   },
-  badgeText: { color: Colors.text, fontSize: 11, fontWeight: '800', letterSpacing: 1 },
-  nume: { color: Colors.text, fontSize: 20, fontWeight: '800' },
-  pretRow: { flexDirection: 'row', alignItems: 'baseline', marginTop: Spacing.xs },
-  pret: { color: Colors.primary, fontSize: 32, fontWeight: '900' },
-  pretLuna: { color: Colors.textSecondary, fontSize: 14 },
-  beneficii: { marginTop: Spacing.md, gap: Spacing.sm },
-  beneficiu: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  beneficiuText: { color: Colors.text, fontSize: 14, flex: 1 },
-  buton: {
-    backgroundColor: Colors.surfaceLight,
-    borderRadius: Radius.sm,
-    paddingVertical: Spacing.md - 4,
+  popularBadgeText: {
+    fontFamily: 'Inter_600SemiBold',
+    fontSize: 10,
+    letterSpacing: 1,
+    color: Colors.tertiaryFixed,
+    textTransform: 'uppercase',
+  },
+  planTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  planNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  planName: { ...Type.headlineSm, color: Colors.white },
+  planDesc: { ...Type.labelSm, color: Colors.onSurfaceVariant, marginTop: 4 },
+  planPrice: { ...Type.headlineMd, color: Colors.white },
+  planPriceUnit: { ...Type.bodyMd, color: Colors.onSurfaceVariant },
+  planPerMonth: { ...Type.labelSm, color: Colors.onSurfaceVariant },
+  divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 16 },
+  benefitRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  benefitText: { ...Type.bodyMd, color: Colors.onSurface, flex: 1 },
+  benefitTextExcluded: { color: 'rgba(195,198,212,0.5)' },
+  ctaPrimary: {
+    marginTop: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: Colors.primary,
     alignItems: 'center',
-    marginTop: Spacing.lg,
+    shadowColor: '#F15A23',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 8,
   },
-  butonPopular: { backgroundColor: Colors.primary },
-  butonText: { color: Colors.text, fontWeight: '700' },
-  nota: { color: Colors.textSecondary, fontSize: 13, textAlign: 'center', paddingBottom: Spacing.lg },
+  ctaPrimaryText: { ...Type.labelBold, color: Colors.onPrimary },
+  ctaOutline: {
+    marginTop: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+    backgroundColor: 'rgba(241,90,35,0.1)',
+    borderWidth: 1,
+    borderColor: 'rgba(241,90,35,0.5)',
+    alignItems: 'center',
+  },
+  ctaOutlineText: { ...Type.labelBold, color: Colors.primary },
 });
