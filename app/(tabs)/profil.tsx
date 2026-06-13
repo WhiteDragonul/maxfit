@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Linking, Modal, Pressable, TextInput } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { supabase } from '@/lib/supabase';
 import Card from '@/components/Card';
-import { Colors, Spacing, Type, Radius } from '@/constants/theme';
+import { Colors, Spacing, Type, Radius, Shadow } from '@/constants/theme';
 import { GYM } from '@/constants/data';
 import { useReservations } from '@/context/Reservations';
 import { useLocatie } from '@/context/Location';
 import { useMembership } from '@/context/Membership';
+import { useAuth } from '@/context/Auth';
 
 const telLink = (t: string) => `tel:${t.replace(/\s/g, '')}`;
-const CHECKIN_KEY = 'maxfit:checkin:v1';
 
 const LUNI = ['ianuarie', 'februarie', 'martie', 'aprilie', 'mai', 'iunie', 'iulie', 'august', 'septembrie', 'octombrie', 'noiembrie', 'decembrie'];
 const formatData = (iso: string) => {
@@ -45,6 +45,26 @@ export default function Profil() {
   const { rezervari, cancel } = useReservations();
   const { locatie } = useLocatie();
   const { abonament } = useMembership();
+  const { email, userId, logout, changePassword } = useAuth();
+
+  // Schimbare parolă
+  const [pwModal, setPwModal] = useState(false);
+  const [pwVeche, setPwVeche] = useState('');
+  const [pwNoua, setPwNoua] = useState('');
+  const [pwEroare, setPwEroare] = useState('');
+
+  const trimitePw = async () => {
+    setPwEroare('');
+    const r = await changePassword(pwVeche, pwNoua);
+    if (!r.ok) {
+      setPwEroare(r.eroare);
+    } else {
+      setPwModal(false);
+      setPwVeche('');
+      setPwNoua('');
+      // schimbarea parolei deconectează → gate-ul redirecționează la /login
+    }
+  };
 
   const zile = abonament ? zileRamase(abonament.expiryISO) : 0;
   const activ = !!abonament && zile > 0;
@@ -59,23 +79,36 @@ export default function Profil() {
   // Check-in (o singură intrare pe zi, valabilă în ambele locații)
   const [checkin, setCheckin] = useState<Checkin | null>(null);
   useEffect(() => {
-    AsyncStorage.getItem(CHECKIN_KEY)
-      .then((raw) => raw && setCheckin(JSON.parse(raw)))
-      .catch(() => {});
-  }, []);
+    if (!userId) {
+      setCheckin(null);
+      return;
+    }
+    supabase
+      .from('checkins')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('checkin_date', azi)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (data) setCheckin({ dataISO: data.checkin_date, locatieNume: data.location_name, ora: data.checkin_time });
+      });
+  }, [userId, azi]);
 
   const intratAzi = checkin?.dataISO === azi;
 
-  const faCheckin = () => {
-    if (intratAzi) return;
+  const faCheckin = async () => {
+    if (intratAzi || !userId) return;
     const acum = new Date();
-    const c: Checkin = {
-      dataISO: azi,
-      locatieNume: locatie.nume,
-      ora: `${String(acum.getHours()).padStart(2, '0')}:${String(acum.getMinutes()).padStart(2, '0')}`,
-    };
-    setCheckin(c);
-    AsyncStorage.setItem(CHECKIN_KEY, JSON.stringify(c)).catch(() => {});
+    const ora = `${String(acum.getHours()).padStart(2, '0')}:${String(acum.getMinutes()).padStart(2, '0')}`;
+    setCheckin({ dataISO: azi, locatieNume: locatie.nume, ora }); // optimist
+    await supabase.from('checkins').insert({
+      user_id: userId,
+      checkin_date: azi,
+      location_id: locatie.id,
+      location_name: locatie.nume,
+      checkin_time: ora,
+    });
+    // constrângerea unique(user_id, checkin_date) garantează „o intrare/zi"
   };
 
   return (
@@ -102,6 +135,7 @@ export default function Profil() {
             <Text style={styles.premiumChipText}>{activ ? `MEMBRU ${abonament!.nume.toUpperCase()}` : 'FĂRĂ ABONAMENT'}</Text>
           </View>
           <Text style={styles.memberName}>Alexandru Paun</Text>
+          {email ? <Text style={styles.memberEmail}>{email}</Text> : null}
           <View style={styles.memberStats}>
             <View style={styles.memberStat}>
               <Text style={styles.memberStatLabel}>ANTRENAMENTE</Text>
@@ -236,8 +270,50 @@ export default function Profil() {
               <Text style={styles.footerLinkText}>{GYM.email}</Text>
             </TouchableOpacity>
           </View>
+
+          {/* Cont */}
+          <View style={styles.account}>
+            <TouchableOpacity style={styles.accountRow} activeOpacity={0.7} onPress={() => { setPwEroare(''); setPwModal(true); }}>
+              <MaterialIcons name="lock-outline" size={20} color={Colors.onSurface} />
+              <Text style={styles.accountText}>Schimbă parola</Text>
+              <MaterialIcons name="chevron-right" size={22} color={Colors.onSurfaceVariant} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.accountRow} activeOpacity={0.7} onPress={logout}>
+              <MaterialIcons name="logout" size={20} color={Colors.error} />
+              <Text style={[styles.accountText, { color: Colors.error }]}>Deconectează-te</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
+
+      {/* Modal schimbare parolă */}
+      <Modal visible={pwModal} transparent animationType="slide" onRequestClose={() => setPwModal(false)}>
+        <Pressable style={styles.dimmer} onPress={() => setPwModal(false)} />
+        <View style={styles.sheetWrap}>
+          <View style={[styles.sheet, { paddingBottom: Math.max(insets.bottom, 16) + 16 }]}>
+            <View style={styles.grabber} />
+            <Text style={styles.sheetTitle}>Schimbă parola</Text>
+            <Text style={styles.sheetText}>După schimbare vei fi deconectat și va trebui să te conectezi din nou.</Text>
+            <View style={styles.field}>
+              <MaterialIcons name="lock-outline" size={20} color={Colors.onSurfaceVariant} />
+              <TextInput style={styles.input} placeholder="Parola actuală" placeholderTextColor={Colors.outline} secureTextEntry autoCapitalize="none" value={pwVeche} onChangeText={setPwVeche} />
+            </View>
+            <View style={styles.field}>
+              <MaterialIcons name="lock-outline" size={20} color={Colors.onSurfaceVariant} />
+              <TextInput style={styles.input} placeholder="Parola nouă (min. 6 caractere)" placeholderTextColor={Colors.outline} secureTextEntry autoCapitalize="none" value={pwNoua} onChangeText={setPwNoua} />
+            </View>
+            {pwEroare ? (
+              <View style={styles.errorBox}>
+                <MaterialIcons name="error-outline" size={16} color={Colors.error} />
+                <Text style={styles.errorText}>{pwEroare}</Text>
+              </View>
+            ) : null}
+            <TouchableOpacity style={styles.pwBtn} activeOpacity={0.85} onPress={trimitePw}>
+              <Text style={styles.pwBtnText}>Salvează parola</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -278,7 +354,8 @@ const styles = StyleSheet.create({
   },
   premiumChip: { backgroundColor: Colors.surfaceAlt, paddingHorizontal: 12, paddingVertical: 5, borderRadius: Radius.pill, marginBottom: Spacing.sm },
   premiumChipText: { ...Type.label, color: Colors.onSurfaceVariant },
-  memberName: { ...Type.headlineMd, color: Colors.onSurface, marginBottom: Spacing.gap },
+  memberName: { ...Type.headlineMd, color: Colors.onSurface },
+  memberEmail: { ...Type.bodySm, color: Colors.onSurfaceVariant, marginTop: 2, marginBottom: Spacing.gap },
   memberStats: { flexDirection: 'row', alignItems: 'center', gap: Spacing.lg },
   memberStat: { alignItems: 'center' },
   memberStatLabel: { ...Type.label, color: Colors.onSurfaceVariant, marginBottom: 4 },
@@ -341,4 +418,51 @@ const styles = StyleSheet.create({
   footerLinks: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Spacing.lg },
   footerLink: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   footerLinkText: { ...Type.bodySm, color: Colors.onSurface },
+
+  account: { width: '100%', marginTop: Spacing.lg, gap: Spacing.sm },
+  accountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    backgroundColor: Colors.surface,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: Colors.border,
+    borderRadius: Radius.button,
+    paddingHorizontal: Spacing.gap,
+    paddingVertical: 14,
+  },
+  accountText: { ...Type.bodyMdSemi, color: Colors.onSurface, flex: 1 },
+
+  dimmer: { flex: 1, backgroundColor: 'rgba(26,28,29,0.4)' },
+  sheetWrap: { justifyContent: 'flex-end' },
+  sheet: {
+    backgroundColor: Colors.surface,
+    borderTopLeftRadius: Radius.sheet,
+    borderTopRightRadius: Radius.sheet,
+    paddingHorizontal: Spacing.lg,
+    paddingTop: Spacing.gap,
+    alignItems: 'center',
+    boxShadow: '0px -8px 24px rgba(0,0,0,0.12)',
+    elevation: 16,
+  },
+  grabber: { width: 48, height: 5, borderRadius: 3, backgroundColor: Colors.border, marginBottom: Spacing.lg },
+  sheetTitle: { ...Type.headlineMd, color: Colors.onSurface, alignSelf: 'flex-start' },
+  sheetText: { ...Type.bodySm, color: Colors.onSurfaceVariant, alignSelf: 'flex-start', marginTop: 4, marginBottom: Spacing.gap },
+  field: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    borderRadius: Radius.button,
+    paddingHorizontal: 14,
+    marginBottom: Spacing.sm,
+  },
+  input: { flex: 1, ...Type.bodyMd, color: Colors.onSurface, paddingVertical: 12 },
+  errorBox: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', marginBottom: Spacing.sm },
+  errorText: { ...Type.bodySm, color: Colors.error, flex: 1 },
+  pwBtn: { width: '100%', backgroundColor: Colors.primary, paddingVertical: 15, borderRadius: Radius.button, alignItems: 'center', marginTop: Spacing.sm, ...Shadow.button },
+  pwBtnText: { ...Type.bodyMdSemi, color: Colors.onPrimary },
 });
