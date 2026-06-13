@@ -1,124 +1,142 @@
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Blobs from '@/components/Blobs';
-import GlassCard from '@/components/GlassCard';
-import { Colors, Spacing, Type } from '@/constants/theme';
+import Card from '@/components/Card';
+import { Colors, Spacing, Type, Radius } from '@/constants/theme';
+import { GYM, LOCATIE_PRINCIPALA } from '@/constants/data';
+import { useReservations } from '@/context/Reservations';
+
+const telLink = (t: string) => `tel:${t.replace(/\s/g, '')}`;
 
 const ACTIUNI = [
-  { id: 'istoric', label: 'Istoric Intrări', icon: 'history' as const, tint: Colors.primary, bg: 'rgba(241,90,35,0.1)' },
-  { id: 'plati', label: 'Plăți & Facturi', icon: 'credit-card' as const, tint: Colors.tertiary, bg: 'rgba(255,182,146,0.1)' },
-  { id: 'setari', label: 'Setări Cont', icon: 'settings' as const, tint: Colors.secondary, bg: 'rgba(198,198,198,0.1)' },
-  { id: 'suport', label: 'Suport', icon: 'support-agent' as const, tint: Colors.error, bg: 'rgba(255,180,171,0.1)' },
+  { id: 'istoric', label: 'Istoric', icon: 'history' as const },
+  { id: 'plati', label: 'Plăți', icon: 'payments' as const },
+  { id: 'setari', label: 'Setări', icon: 'settings' as const },
+  { id: 'suport', label: 'Suport', icon: 'support-agent' as const },
 ];
 
 export default function Profil() {
   const insets = useSafeAreaInsets();
+  const { rezervari, cancel } = useReservations();
+  const receptie = LOCATIE_PRINCIPALA;
+
+  const azi = new Date().toISOString().slice(0, 10);
+  const viitoare = [...rezervari]
+    .filter((r) => r.dataISO >= azi)
+    .sort((a, b) => (a.dataISO + a.ora).localeCompare(b.dataISO + b.ora));
 
   return (
     <View style={styles.container}>
-      <Blobs />
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: Spacing.containerMargin,
-          paddingTop: insets.top + 16,
-          paddingBottom: 128,
-          gap: Spacing.stackGap,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Member Card */}
-        <GlassCard radius={12} padding={Spacing.glassInnerPadding}>
-          <View style={styles.memberRow}>
+      <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
+        <Text style={styles.headerTitle}>Profil</Text>
+        <TouchableOpacity activeOpacity={0.7}>
+          <MaterialIcons name="settings" size={24} color={Colors.onSurface} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Card membru */}
+        <Card padding={Spacing.lg} style={{ alignItems: 'center' }}>
+          <View style={styles.avatarWrap}>
             <View style={styles.avatar}>
-              <MaterialIcons name="person" size={32} color={Colors.onSurfaceVariant} />
+              <MaterialIcons name="person" size={44} color={Colors.onSurfaceVariant} />
             </View>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.memberName}>Alexandru Paun</Text>
-              <View style={styles.premiumBadge}>
-                <MaterialIcons name="stars" size={14} color={Colors.tertiary} />
-                <Text style={styles.premiumBadgeText}>MEMBRU PREMIUM</Text>
-              </View>
+            <View style={styles.avatarBadge}>
+              <MaterialIcons name="star" size={14} color={Colors.onPrimary} />
             </View>
           </View>
+          <View style={styles.premiumChip}>
+            <Text style={styles.premiumChipText}>MEMBRU PREMIUM</Text>
+          </View>
+          <Text style={styles.memberName}>Alexandru Paun</Text>
           <View style={styles.memberStats}>
-            <View style={styles.memberStatCard}>
+            <View style={styles.memberStat}>
               <Text style={styles.memberStatLabel}>ANTRENAMENTE</Text>
-              <Text style={[styles.memberStatValue, { color: Colors.primary }]}>124</Text>
+              <Text style={styles.memberStatValue}>124</Text>
             </View>
-            <View style={styles.memberStatCard}>
-              <Text style={styles.memberStatLabel}>STATUS CONT</Text>
-              <Text style={[styles.memberStatValueSm, { color: Colors.tertiary }]}>Activ</Text>
+            <View style={styles.memberStatDivider} />
+            <View style={styles.memberStat}>
+              <Text style={styles.memberStatLabel}>STATUS</Text>
+              <Text style={styles.memberStatValue}>Activ</Text>
             </View>
           </View>
-        </GlassCard>
+        </Card>
 
-        {/* QR Check-in */}
-        <GlassCard radius={12} padding={Spacing.glassInnerPadding}>
-          <View style={{ alignItems: 'center', gap: 24 }}>
-            <Text style={styles.qrTitle}>Check-in Rapid</Text>
-            <Text style={styles.qrSubtitle}>Scanează acest cod la recepție pentru acces instant.</Text>
-            <View style={styles.qrFrame}>
-              <View style={styles.qrInner}>
-                <MaterialIcons name="qr-code-2" size={120} color="#9ca3af" />
-              </View>
-            </View>
-            <TouchableOpacity style={styles.refreshBtn} activeOpacity={0.8}>
-              <MaterialIcons name="refresh" size={20} color={Colors.primary} />
-              <Text style={styles.refreshBtnText}>Reîncarcă Codul</Text>
-            </TouchableOpacity>
+        {/* QR */}
+        <Card padding={Spacing.lg} style={{ alignItems: 'center' }}>
+          <Text style={styles.qrTitle}>Cod Acces Sala</Text>
+          <View style={styles.qrFrame}>
+            <MaterialIcons name="qr-code-2" size={150} color={Colors.white} />
           </View>
-        </GlassCard>
+          <TouchableOpacity style={styles.refreshBtn} activeOpacity={0.8}>
+            <MaterialIcons name="refresh" size={20} color={Colors.onSurface} />
+            <Text style={styles.refreshBtnText}>Reîncarcă Codul</Text>
+          </TouchableOpacity>
+        </Card>
 
-        {/* Quick Actions Bento Grid */}
+        {/* Rezervările mele */}
         <View>
-          <Text style={styles.sectionLabel}>ACȚIUNI RAPIDE</Text>
+          <Text style={styles.sectionTitle}>Rezervările mele</Text>
+          {viitoare.length === 0 ? (
+            <Card padding={Spacing.lg}>
+              <View style={styles.emptyRez}>
+                <MaterialIcons name="event-available" size={28} color={Colors.onSurfaceVariant} />
+                <Text style={styles.emptyRezText}>
+                  Nu ai nicio rezervare. Rezervă-ți locul din secțiunea Clase.
+                </Text>
+              </View>
+            </Card>
+          ) : (
+            <View style={{ gap: Spacing.sm }}>
+              {viitoare.map((r) => (
+                <Card key={r.key} padding={Spacing.gap}>
+                  <View style={styles.rezRow}>
+                    <View style={styles.rezTime}>
+                      <Text style={styles.rezTimeText}>{r.ora}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={styles.rezName}>{r.nume}</Text>
+                      <Text style={styles.rezMeta}>
+                        {r.dataLabel} • {r.sala} • Instructor: {r.instructor}
+                      </Text>
+                    </View>
+                    <TouchableOpacity style={styles.rezCancel} activeOpacity={0.7} onPress={() => cancel(r.key)}>
+                      <MaterialIcons name="close" size={20} color={Colors.onSurfaceVariant} />
+                    </TouchableOpacity>
+                  </View>
+                </Card>
+              ))}
+            </View>
+          )}
+        </View>
+
+        {/* Acțiuni rapide */}
+        <View>
+          <Text style={styles.sectionTitle}>Acțiuni Rapide</Text>
           <View style={styles.actionsGrid}>
             {ACTIUNI.map((a) => (
-              <TouchableOpacity key={a.id} style={styles.actionCard} activeOpacity={0.8}>
-                <View style={[styles.actionIcon, { backgroundColor: a.bg }]}>
-                  <MaterialIcons name={a.icon} size={24} color={a.tint} />
-                </View>
+              <Card key={a.id} padding={Spacing.gap} style={styles.actionCard}>
+                <MaterialIcons name={a.icon} size={30} color={Colors.onSurfaceVariant} />
                 <Text style={styles.actionLabel}>{a.label}</Text>
-              </TouchableOpacity>
+              </Card>
             ))}
           </View>
         </View>
 
         {/* Contact */}
-        <GlassCard radius={12} padding={Spacing.glassInnerPadding} style={{ marginBottom: Spacing.sectionSpacing }}>
-          <Text style={styles.contactTitle}>Contactează-ne</Text>
-          <View style={{ gap: 12 }}>
-            <TouchableOpacity
-              style={styles.contactRow}
-              activeOpacity={0.8}
-              onPress={() => Linking.openURL('tel:+40123456789')}
-            >
-              <View style={styles.contactIcon}>
-                <MaterialIcons name="call" size={22} color={Colors.primary} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.contactLabel}>Sună Recepția</Text>
-                <Text style={styles.contactValue}>+40 123 456 789</Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={24} color={Colors.onSurfaceVariant} />
+        <View style={styles.footer}>
+          <Text style={styles.footerTitle}>Ai nevoie de ajutor?</Text>
+          <View style={styles.footerLinks}>
+            <TouchableOpacity style={styles.footerLink} activeOpacity={0.7} onPress={() => Linking.openURL(telLink(receptie.telefon))}>
+              <MaterialIcons name="call" size={18} color={Colors.onSurface} />
+              <Text style={styles.footerLinkText}>{receptie.telefon}</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.contactRow}
-              activeOpacity={0.8}
-              onPress={() => Linking.openURL('mailto:contact@maxfit.ro')}
-            >
-              <View style={styles.contactIcon}>
-                <MaterialIcons name="mail" size={22} color={Colors.primary} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={styles.contactLabel}>Trimite Email</Text>
-                <Text style={styles.contactValue}>contact@maxfit.ro</Text>
-              </View>
-              <MaterialIcons name="chevron-right" size={24} color={Colors.onSurfaceVariant} />
+            <TouchableOpacity style={styles.footerLink} activeOpacity={0.7} onPress={() => Linking.openURL(`mailto:${GYM.email}`)}>
+              <MaterialIcons name="mail" size={18} color={Colors.onSurface} />
+              <Text style={styles.footerLinkText}>{GYM.email}</Text>
             </TouchableOpacity>
           </View>
-        </GlassCard>
+        </View>
       </ScrollView>
     </View>
   );
@@ -126,143 +144,107 @@ export default function Profil() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  memberRow: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.surfaceContainer,
-    borderWidth: 2,
-    borderColor: 'rgba(241,90,35,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  memberName: { ...Type.headlineSm, color: Colors.onSurface },
-  premiumBadge: {
+  header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: 4,
-    alignSelf: 'flex-start',
-    backgroundColor: 'rgba(136,55,0,0.3)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,182,146,0.2)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 999,
-    marginTop: 4,
+    paddingHorizontal: Spacing.screen,
+    paddingBottom: Spacing.gap,
+    backgroundColor: Colors.background,
   },
-  premiumBadgeText: {
-    ...Type.labelSm,
-    fontFamily: 'Inter_600SemiBold',
-    color: Colors.tertiary,
-    letterSpacing: 0.5,
+  headerTitle: { ...Type.display, color: Colors.onSurface },
+  content: {
+    paddingHorizontal: Spacing.screen,
+    paddingBottom: 120,
+    gap: Spacing.section,
   },
-  memberStats: { flexDirection: 'row', gap: 16, marginTop: 16 },
-  memberStatCard: {
-    flex: 1,
-    backgroundColor: 'rgba(42,42,42,0.4)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 8,
-    padding: 12,
-    alignItems: 'center',
-  },
-  memberStatLabel: {
-    ...Type.labelSm,
-    color: Colors.onSurfaceVariant,
-    letterSpacing: 1,
-    marginBottom: 4,
-  },
-  memberStatValue: { ...Type.headlineMd },
-  memberStatValueSm: { ...Type.headlineSm, marginTop: 2 },
-  qrTitle: { ...Type.headlineSm, color: Colors.onSurface, textAlign: 'center' },
-  qrSubtitle: {
-    ...Type.bodyMd,
-    color: Colors.onSurfaceVariant,
-    textAlign: 'center',
-    maxWidth: 250,
-  },
-  qrFrame: {
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    boxShadow: '0 0 30px rgba(255,255,255,0.1)',
-    elevation: 4,
-  },
-  qrInner: {
-    width: 192,
-    height: 192,
-    backgroundColor: '#e5e7eb',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
+  avatarWrap: { position: 'relative', marginBottom: Spacing.gap },
+  avatar: {
+    width: 96,
+    height: 96,
+    borderRadius: 48,
+    backgroundColor: Colors.surfaceAlt,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  avatarBadge: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: Colors.primary,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: Colors.surface,
+  },
+  premiumChip: {
+    backgroundColor: Colors.surfaceAlt,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: Radius.pill,
+    marginBottom: Spacing.sm,
+  },
+  premiumChipText: { ...Type.label, color: Colors.onSurfaceVariant },
+  memberName: { ...Type.headlineMd, color: Colors.onSurface, marginBottom: Spacing.gap },
+  memberStats: { flexDirection: 'row', alignItems: 'center', gap: Spacing.lg },
+  memberStat: { alignItems: 'center' },
+  memberStatLabel: { ...Type.label, color: Colors.onSurfaceVariant, marginBottom: 4 },
+  memberStatValue: { ...Type.stat, fontSize: 26, color: Colors.primary },
+  memberStatDivider: { width: StyleSheet.hairlineWidth, height: 40, backgroundColor: Colors.border },
+  qrTitle: { ...Type.bodyLg, color: Colors.onSurface, marginBottom: Spacing.gap },
+  qrFrame: {
+    backgroundColor: Colors.onSurface,
+    padding: 16,
+    borderRadius: Radius.card,
+    marginBottom: Spacing.gap,
   },
   refreshBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    backgroundColor: Colors.surfaceContainerHigh,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 999,
-    borderWidth: 1,
-    borderColor: 'rgba(66,71,82,0.3)',
+    backgroundColor: Colors.surfaceAlt,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: Radius.button,
   },
-  refreshBtnText: { ...Type.labelBold, color: Colors.primary },
-  sectionLabel: {
-    ...Type.labelBold,
-    color: Colors.onSurfaceVariant,
-    letterSpacing: 2,
-    marginBottom: 16,
-    paddingLeft: 8,
+  refreshBtnText: { ...Type.bodySm, fontFamily: 'Inter_600SemiBold', color: Colors.onSurface },
+  sectionTitle: { ...Type.headlineLg, color: Colors.onSurface, marginBottom: Spacing.gap },
+  emptyRez: { alignItems: 'center', gap: 12 },
+  emptyRezText: { ...Type.bodyMd, color: Colors.onSurfaceVariant, textAlign: 'center', maxWidth: 260 },
+  rezRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.gap },
+  rezTime: {
+    backgroundColor: Colors.primaryTint,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: Radius.chip,
+    minWidth: 60,
+    alignItems: 'center',
   },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: Spacing.stackGap,
-  },
+  rezTimeText: { ...Type.label, color: Colors.primary, letterSpacing: 0 },
+  rezName: { ...Type.bodyMdSemi, color: Colors.onSurface },
+  rezMeta: { ...Type.bodySm, color: Colors.onSurfaceVariant, marginTop: 2 },
+  rezCancel: { padding: 6 },
+  actionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
   actionCard: {
-    width: '47%',
+    width: '47.8%',
     flexGrow: 1,
-    aspectRatio: 1,
-    backgroundColor: 'rgba(42,42,42,0.4)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 12,
+    aspectRatio: 1.6,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
-    padding: 16,
+    gap: 8,
   },
-  actionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  actionLabel: { ...Type.bodySm, color: Colors.onSurface },
+  footer: {
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingTop: Spacing.lg,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: Colors.border,
   },
-  actionLabel: { ...Type.labelBold, color: Colors.onSurface, textAlign: 'center' },
-  contactTitle: { ...Type.headlineSm, color: Colors.onSurface, marginBottom: 16 },
-  contactRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-    backgroundColor: 'rgba(42,42,42,0.4)',
-    borderWidth: StyleSheet.hairlineWidth,
-    borderColor: 'rgba(255,255,255,0.1)',
-    borderRadius: 8,
-    padding: 16,
-  },
-  contactIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(241,90,35,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  contactLabel: { ...Type.bodyMd, fontFamily: 'Inter_600SemiBold', color: Colors.onSurface },
-  contactValue: { ...Type.labelSm, color: Colors.onSurfaceVariant, marginTop: 2 },
+  footerTitle: { ...Type.bodySm, color: Colors.onSurfaceVariant, marginBottom: Spacing.gap },
+  footerLinks: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: Spacing.lg },
+  footerLink: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  footerLinkText: { ...Type.bodySm, color: Colors.onSurface },
 });

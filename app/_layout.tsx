@@ -9,6 +9,7 @@ import {
   Inter_800ExtraBold,
 } from '@expo-google-fonts/inter';
 import { Colors } from '@/constants/theme';
+import { ReservationsProvider } from '@/context/Reservations';
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -23,14 +24,14 @@ export default function RootLayout() {
   }
 
   return (
-    <>
-      <StatusBar style="light" />
+    <ReservationsProvider>
+      <StatusBar style="dark" />
       <Stack
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: Colors.background },
         }}
       />
-    </>
+    </ReservationsProvider>
   );
 }

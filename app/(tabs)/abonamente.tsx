@@ -1,96 +1,30 @@
-import { ScrollView, View, Text, StyleSheet, TouchableOpacity, Platform, TextStyle } from 'react-native';
+import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import Blobs from '@/components/Blobs';
-import GlassCard from '@/components/GlassCard';
+import Card from '@/components/Card';
 import TopBar from '@/components/TopBar';
-import { Colors, Spacing, Type, Glass } from '@/constants/theme';
-
-interface Beneficiu {
-  text: string;
-  inclus: boolean;
-}
-
-interface Plan {
-  id: string;
-  nume: string;
-  descriere: string;
-  pret: number;
-  beneficii: Beneficiu[];
-  popular?: boolean;
-  fire?: boolean;
-}
-
-const PLANURI: Plan[] = [
-  {
-    id: 'basic',
-    nume: 'Basic',
-    descriere: 'Acces esențial la facilități',
-    pret: 120,
-    beneficii: [
-      { text: 'Acces gym nelimitat', inclus: true },
-      { text: '1 clasă de grup inclusă', inclus: true },
-      { text: 'Acces zonă SPA', inclus: false },
-    ],
-  },
-  {
-    id: 'full',
-    nume: 'Full Access',
-    descriere: 'Echilibrul perfect pentru progres',
-    pret: 180,
-    popular: true,
-    fire: true,
-    beneficii: [
-      { text: 'Acces gym nelimitat', inclus: true },
-      { text: 'Clase de grup nelimitate', inclus: true },
-      { text: 'Acces zonă SPA (weekend)', inclus: true },
-      { text: '1 Evaluare InBody / lună', inclus: true },
-    ],
-  },
-  {
-    id: 'premium',
-    nume: 'Premium',
-    descriere: 'Experiența VIP completă',
-    pret: 280,
-    beneficii: [
-      { text: 'Acces gym 24/7', inclus: true },
-      { text: 'Clase premium incluse', inclus: true },
-      { text: 'Acces zonă SPA nelimitat', inclus: true },
-      { text: 'Sesiuni cu Antrenor (2/lună)', inclus: true },
-      { text: 'Parcare VIP asigurată', inclus: true },
-    ],
-  },
-];
+import { Colors, Spacing, Type, Radius, Shadow } from '@/constants/theme';
+import { PLANURI } from '@/constants/data';
 
 export default function Abonamente() {
   return (
     <View style={styles.container}>
-      <Blobs />
-      <TopBar />
-      <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: Spacing.containerMargin,
-          paddingTop: 16,
-          paddingBottom: 128,
-          gap: Spacing.sectionSpacing,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View>
-          <Text style={styles.pageTitle}>Alege</Text>
-          <Text style={[styles.pageTitle, styles.pageTitleAccent]}>Abonamentul</Text>
+      <TopBar title="Max Fitness Galați" />
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={{ alignItems: 'center' }}>
+          <Text style={styles.pageTitle}>Alege Abonamentul</Text>
           <Text style={styles.pageSubtitle}>
-            Deblochează-ți potențialul maxim cu planurile noastre premium.
+            Alege planul care se potrivește perfect cu obiectivele tale.
           </Text>
         </View>
 
-        <View style={{ gap: Spacing.stackGap }}>
+        <View style={{ gap: Spacing.lg }}>
           {PLANURI.map((plan) => (
-            <GlassCard
+            <Card
               key={plan.id}
-              radius={12}
-              padding={Spacing.glassInnerPadding}
-              gradient={plan.popular ? Glass.gradientPopular : Glass.gradient}
-              borderColor={plan.popular ? Glass.borderPopular : Glass.border}
+              padding={Spacing.lg}
+              radius={20}
+              bordered={plan.popular}
+              borderColor={Colors.primary}
               style={plan.popular ? styles.popularCard : undefined}
             >
               {plan.popular && (
@@ -98,38 +32,25 @@ export default function Abonamente() {
                   <Text style={styles.popularBadgeText}>CEL MAI POPULAR</Text>
                 </View>
               )}
-              <View style={[styles.planTop, plan.popular && { paddingTop: 8 }]}>
-                <View style={{ flex: 1 }}>
-                  <View style={styles.planNameRow}>
-                    <Text style={styles.planName}>{plan.nume}</Text>
-                    {plan.fire && (
-                      <MaterialIcons name="local-fire-department" size={18} color={Colors.tertiary} />
-                    )}
-                  </View>
-                  <Text style={styles.planDesc}>{plan.descriere}</Text>
-                </View>
-                <View style={{ alignItems: 'flex-end' }}>
-                  <Text style={styles.planPrice}>
-                    {plan.pret} <Text style={styles.planPriceUnit}>lei</Text>
-                  </Text>
-                  <Text style={styles.planPerMonth}>/ lună</Text>
-                </View>
+              <Text style={styles.planName}>{plan.nume}</Text>
+              <View style={styles.priceRow}>
+                <Text style={styles.price}>{plan.pret} lei</Text>
+                <Text style={styles.priceUnit}>/lună</Text>
               </View>
-              <View style={[styles.divider, plan.popular && { backgroundColor: 'rgba(241,90,35,0.2)' }]} />
-              <View style={{ gap: 12 }}>
+
+              <View style={styles.benefits}>
                 {plan.beneficii.map((b) => (
                   <View key={b.text} style={styles.benefitRow}>
                     <MaterialIcons
-                      name={b.inclus ? 'check-circle' : 'cancel'}
+                      name={b.inclus ? 'check' : 'close'}
                       size={20}
-                      color={b.inclus ? Colors.primary : 'rgba(195,198,212,0.5)'}
+                      color={b.inclus ? Colors.primary : Colors.outline}
                     />
-                    <Text style={[styles.benefitText, !b.inclus && styles.benefitTextExcluded]}>
-                      {b.text}
-                    </Text>
+                    <Text style={[styles.benefitText, !b.inclus && styles.benefitExcluded]}>{b.text}</Text>
                   </View>
                 ))}
               </View>
+
               <TouchableOpacity
                 style={plan.popular ? styles.ctaPrimary : styles.ctaOutline}
                 activeOpacity={0.85}
@@ -138,7 +59,7 @@ export default function Abonamente() {
                   Alege {plan.nume}
                 </Text>
               </TouchableOpacity>
-            </GlassCard>
+            </Card>
           ))}
         </View>
       </ScrollView>
@@ -148,66 +69,54 @@ export default function Abonamente() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  pageTitle: { ...Type.displayLgMobile, color: Colors.white },
-  pageTitleAccent: {
-    color: Colors.primary,
-    // textShadow (string) e suportat doar de react-native-web; pe native raman props clasice
-    ...Platform.select<TextStyle>({
-      web: { textShadow: '0 0 20px rgba(241,90,35,0.5)' } as TextStyle,
-      default: {
-        textShadowColor: 'rgba(241,90,35,0.5)',
-        textShadowOffset: { width: 0, height: 0 },
-        textShadowRadius: 20,
-      },
-    }),
+  content: {
+    paddingHorizontal: Spacing.screen,
+    paddingTop: Spacing.gap,
+    paddingBottom: 120,
+    gap: Spacing.section,
   },
-  pageSubtitle: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginTop: 8 },
-  popularCard: { transform: [{ scale: 1.02 }], zIndex: 10 },
+  pageTitle: { ...Type.display, color: Colors.onSurface, textAlign: 'center' },
+  pageSubtitle: {
+    ...Type.bodyMd,
+    color: Colors.onSurfaceVariant,
+    textAlign: 'center',
+    marginTop: Spacing.sm,
+    maxWidth: 300,
+  },
+  popularCard: { borderWidth: 2 },
   popularBadge: {
     position: 'absolute',
-    top: -Spacing.glassInnerPadding,
-    right: -Spacing.glassInnerPadding,
-    backgroundColor: Colors.tertiaryContainer,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderBottomLeftRadius: 8,
+    top: -12,
+    alignSelf: 'center',
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    borderRadius: Radius.pill,
+    ...Shadow.button,
   },
-  popularBadgeText: {
-    fontFamily: 'Inter_600SemiBold',
-    fontSize: 10,
-    letterSpacing: 1,
-    color: Colors.tertiaryFixed,
-    textTransform: 'uppercase',
-  },
-  planTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  planNameRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  planName: { ...Type.headlineSm, color: Colors.white },
-  planDesc: { ...Type.labelSm, color: Colors.onSurfaceVariant, marginTop: 4 },
-  planPrice: { ...Type.headlineMd, color: Colors.white },
-  planPriceUnit: { ...Type.bodyMd, color: Colors.onSurfaceVariant },
-  planPerMonth: { ...Type.labelSm, color: Colors.onSurfaceVariant },
-  divider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 16 },
+  popularBadgeText: { ...Type.label, color: Colors.onPrimary },
+  planName: { ...Type.headlineMd, color: Colors.onSurface, marginTop: 4 },
+  priceRow: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, marginTop: 4, marginBottom: Spacing.lg },
+  price: { ...Type.stat, color: Colors.primary },
+  priceUnit: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginBottom: 4 },
+  benefits: { gap: 12, marginBottom: Spacing.lg },
   benefitRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   benefitText: { ...Type.bodyMd, color: Colors.onSurface, flex: 1 },
-  benefitTextExcluded: { color: 'rgba(195,198,212,0.5)' },
+  benefitExcluded: { color: Colors.onSurfaceVariant },
   ctaPrimary: {
-    marginTop: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
     backgroundColor: Colors.primary,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
     alignItems: 'center',
-    boxShadow: '0 0 20px rgba(241,90,35,0.4)',
-    elevation: 8,
+    ...Shadow.button,
   },
-  ctaPrimaryText: { ...Type.labelBold, color: Colors.onPrimary },
+  ctaPrimaryText: { ...Type.bodyMdSemi, color: Colors.onPrimary },
   ctaOutline: {
-    marginTop: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    backgroundColor: 'rgba(241,90,35,0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(241,90,35,0.5)',
+    paddingVertical: 14,
+    borderRadius: Radius.button,
     alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.primary,
   },
-  ctaOutlineText: { ...Type.labelBold, color: Colors.primary },
+  ctaOutlineText: { ...Type.bodyMdSemi, color: Colors.primary },
 });

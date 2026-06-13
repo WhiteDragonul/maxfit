@@ -1,107 +1,94 @@
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import Blobs from '@/components/Blobs';
-import GlassCard from '@/components/GlassCard';
+import Card from '@/components/Card';
 import TopBar from '@/components/TopBar';
-import { Colors, Spacing, Type, Glass } from '@/constants/theme';
-
-const CLASE_AZI = [
-  { id: '1', nume: 'CrossFit Elite', ora: '18:00', instructor: 'Alex', accent: Colors.primary },
-  { id: '2', nume: 'Zumba Flow', ora: '19:30', instructor: 'Maria', accent: Colors.tertiary },
-];
+import { Colors, Spacing, Type, Radius, Shadow } from '@/constants/theme';
+import { ORAR, LOCATIE_PRINCIPALA } from '@/constants/data';
 
 export default function Acasa() {
   const router = useRouter();
 
+  const weekday = (new Date().getDay() + 6) % 7;
+  const claseAzi = (ORAR[weekday] ?? []).slice(0, 4);
+  const oreGym = LOCATIE_PRINCIPALA.program[0].ore;
+
   return (
     <View style={styles.container}>
-      <Blobs />
-      <TopBar subtitle="Paun" />
+      <TopBar name="Alexandru" />
       <ScrollView
-        contentContainerStyle={{
-          paddingHorizontal: Spacing.containerMargin,
-          paddingTop: 24,
-          paddingBottom: 128,
-          gap: Spacing.sectionSpacing,
-        }}
+        contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
       >
-        {/* Glowing Promo Banner */}
-        <GlassCard radius={32} gradient={Glass.gradientPromo} padding={Spacing.glassInnerPadding}>
-          <Text style={styles.promoLabel}>NOU & EXCLUSIV</Text>
-          <Text style={styles.promoTitle}>HIIT Class</Text>
-          <Text style={styles.promoText}>Începe ziua cu energie pură. Rezervă-ți locul acum.</Text>
-          <TouchableOpacity style={styles.promoCta} onPress={() => router.push('/clase')}>
-            <Text style={styles.promoCtaText}>Vezi detalii</Text>
-            <MaterialIcons name="arrow-forward" size={18} color={Colors.primaryFixed} />
+        {/* Hero / Promo */}
+        <Card padding={Spacing.lg} radius={20}>
+          <View style={styles.heroLabel}>
+            <Text style={styles.heroLabelText}>RECOMANDARE</Text>
+          </View>
+          <Text style={styles.heroTitle}>HIIT Class</Text>
+          <Text style={styles.heroText}>
+            Antrenament de intensitate crescută pentru rezultate maxime în timp minim.
+            Alătură-te provocării de azi.
+          </Text>
+          <TouchableOpacity style={styles.heroBtn} activeOpacity={0.85} onPress={() => router.push('/clase')}>
+            <Text style={styles.heroBtnText}>Vezi detalii</Text>
           </TouchableOpacity>
-        </GlassCard>
+        </Card>
 
-        {/* Quick Stats Bento Grid */}
+        {/* Stats */}
         <View style={styles.statsRow}>
-          <GlassCard style={{ flex: 1 }} padding={Spacing.elementPadding}>
-            <View style={styles.statInner}>
-              <View style={[styles.statIcon, { backgroundColor: 'rgba(241,90,35,0.1)' }]}>
-                <MaterialIcons name="calendar-month" size={24} color={Colors.primary} />
-              </View>
+          <Card style={{ flex: 1 }} padding={Spacing.gap}>
+            <View style={styles.statHead}>
+              <MaterialIcons name="calendar-month" size={20} color={Colors.onSurfaceVariant} />
               <Text style={styles.statLabel}>Vizite luna aceasta</Text>
-              <Text style={[styles.statValue, { color: Colors.primaryFixed }]}>12</Text>
             </View>
-          </GlassCard>
-          <GlassCard style={{ flex: 1 }} padding={Spacing.elementPadding}>
-            <View style={styles.statInner}>
-              <View style={[styles.statIcon, { backgroundColor: 'rgba(255,182,146,0.1)' }]}>
-                <MaterialIcons name="schedule" size={24} color={Colors.tertiary} />
-              </View>
+            <Text style={styles.statValue}>12</Text>
+          </Card>
+          <Card style={{ flex: 1 }} padding={Spacing.gap}>
+            <View style={styles.statHead}>
+              <MaterialIcons name="schedule" size={20} color={Colors.onSurfaceVariant} />
               <Text style={styles.statLabel}>Ore de Gym</Text>
-              <Text style={[styles.statValueSm, { color: Colors.tertiaryFixed }]}>06:00 - 23:00</Text>
             </View>
-          </GlassCard>
+            <Text style={styles.statHours}>{oreGym}</Text>
+          </Card>
         </View>
 
-        {/* Today's Classes Carousel */}
+        {/* Clasele de azi */}
         <View>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Clasele de azi</Text>
             <TouchableOpacity onPress={() => router.push('/clase')}>
-              <Text style={styles.sectionLink}>Vezi toate</Text>
+              <Text style={styles.sectionLink}>Toate</Text>
             </TouchableOpacity>
           </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ gap: 16, paddingRight: Spacing.containerMargin }}
-          >
-            {CLASE_AZI.map((clasa) => (
-              <GlassCard key={clasa.id} radius={28} style={styles.classCard} padding={16}>
-                <View style={styles.classCardInner}>
-                  <View style={styles.classCardTop}>
-                    <View style={[styles.timeBadge, { backgroundColor: `${clasa.accent}33` }]}>
-                      <Text style={[styles.timeBadgeText, { color: Colors.primaryFixed }]}>
-                        {clasa.ora}
-                      </Text>
+          {claseAzi.length === 0 ? (
+            <Text style={styles.empty}>Azi nu sunt clase de grup programate.</Text>
+          ) : (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: Spacing.gap, paddingRight: Spacing.screen }}
+            >
+              {claseAzi.map((clasa) => (
+                <Card key={clasa.id} style={styles.classCard} padding={Spacing.gap} radius={Radius.card}>
+                  <View style={styles.classTop}>
+                    <View style={styles.timePill}>
+                      <MaterialIcons name="schedule" size={14} color={Colors.primary} />
+                      <Text style={styles.timePillText}>{clasa.ora}</Text>
                     </View>
-                    <TouchableOpacity style={styles.bookmark}>
-                      <MaterialIcons name="bookmark-border" size={18} color={Colors.onSurfaceVariant} />
-                    </TouchableOpacity>
-                  </View>
-                  <View style={{ marginTop: 64 }}>
-                    <Text style={styles.classCardTitle}>{clasa.nume}</Text>
-                    <View style={styles.instructorRow}>
-                      <MaterialIcons name="person" size={14} color={Colors.outline} />
-                      <Text style={styles.instructorText}>Instructor: {clasa.instructor}</Text>
+                    <View style={styles.categoryChip}>
+                      <Text style={styles.categoryChipText}>{clasa.categorie}</Text>
                     </View>
                   </View>
-                </View>
-              </GlassCard>
-            ))}
-          </ScrollView>
-        </View>
-
-        {/* Brand anchor */}
-        <View style={styles.brandAnchor}>
-          <Text style={styles.brandText}>MAXFIT</Text>
+                  <Text style={styles.classCardTitle}>{clasa.nume}</Text>
+                  <View style={styles.instructorRow}>
+                    <MaterialIcons name="person" size={16} color={Colors.onSurfaceVariant} />
+                    <Text style={styles.instructorText}>{clasa.instructor}</Text>
+                  </View>
+                </Card>
+              ))}
+            </ScrollView>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -110,58 +97,66 @@ export default function Acasa() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.background },
-  promoLabel: {
-    ...Type.labelBold,
-    color: Colors.tertiary,
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
+  content: {
+    paddingHorizontal: Spacing.screen,
+    paddingTop: Spacing.lg,
+    paddingBottom: 120,
+    gap: Spacing.section,
   },
-  promoTitle: { ...Type.displayLgMobile, color: Colors.onSurface, marginTop: 8 },
-  promoText: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginTop: 8, maxWidth: '80%' },
-  promoCta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 16 },
-  promoCtaText: { ...Type.labelBold, color: Colors.primaryFixed },
-  statsRow: { flexDirection: 'row', gap: Spacing.stackGap },
-  statInner: { alignItems: 'center', gap: 8, paddingVertical: 8 },
-  statIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+  heroLabel: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primarySoft,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    marginBottom: Spacing.sm,
   },
-  statLabel: { ...Type.labelSm, color: Colors.onSurfaceVariant, textAlign: 'center' },
-  statValue: { ...Type.headlineMd, marginTop: 4 },
-  statValueSm: { ...Type.headlineSm, marginTop: 4, textAlign: 'center' },
+  heroLabelText: { ...Type.label, color: Colors.primary },
+  heroTitle: { ...Type.headlineLg, color: Colors.onSurface, marginBottom: Spacing.sm },
+  heroText: { ...Type.bodyMd, color: Colors.onSurfaceVariant, marginBottom: Spacing.lg, maxWidth: '90%' },
+  heroBtn: {
+    alignSelf: 'flex-start',
+    backgroundColor: Colors.primary,
+    paddingHorizontal: 24,
+    paddingVertical: 14,
+    borderRadius: Radius.button,
+    ...Shadow.button,
+  },
+  heroBtnText: { ...Type.bodyMdSemi, color: Colors.onPrimary },
+  statsRow: { flexDirection: 'row', gap: Spacing.gap },
+  statHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: Spacing.gap },
+  statLabel: { ...Type.bodySm, color: Colors.onSurfaceVariant, flex: 1 },
+  statValue: { ...Type.stat, color: Colors.primary },
+  statHours: { ...Type.headlineMd, fontSize: 22, color: Colors.onSurface },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    marginBottom: 16,
+    marginBottom: Spacing.gap,
   },
-  sectionTitle: { ...Type.headlineSm, color: Colors.onSurface },
-  sectionLink: { ...Type.labelBold, color: Colors.primary },
+  sectionTitle: { ...Type.headlineMd, fontSize: 22, color: Colors.onSurface },
+  sectionLink: { ...Type.bodySm, fontFamily: 'Inter_600SemiBold', color: Colors.primary },
+  empty: { ...Type.bodyMd, color: Colors.onSurfaceVariant },
   classCard: { width: 240 },
-  classCardInner: { minHeight: 140 },
-  classCardTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  timeBadge: {
+  classTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
+  timePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: Colors.primarySoft,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: Radius.pill,
+  },
+  timePillText: { ...Type.label, color: Colors.primary, letterSpacing: 0 },
+  categoryChip: {
+    backgroundColor: Colors.surfaceAlt,
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 999,
+    borderRadius: 6,
   },
-  timeBadgeText: { fontFamily: 'Inter_700Bold', fontSize: 10, textTransform: 'uppercase' },
-  bookmark: {
-    backgroundColor: 'rgba(18,18,18,0.4)',
-    borderRadius: 999,
-    padding: 4,
-  },
-  classCardTitle: { ...Type.headlineSm, color: Colors.white },
-  instructorRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 4 },
-  instructorText: { ...Type.labelSm, color: Colors.outline },
-  brandAnchor: { alignItems: 'center', paddingVertical: 32, opacity: 0.2 },
-  brandText: {
-    fontFamily: 'Inter_800ExtraBold',
-    fontSize: 24,
-    letterSpacing: 6,
-    color: Colors.onSurface,
-  },
+  categoryChipText: { ...Type.label, color: Colors.onSurfaceVariant, letterSpacing: 0 },
+  classCardTitle: { ...Type.bodyLgSemi, color: Colors.onSurface, marginBottom: 4 },
+  instructorRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  instructorText: { ...Type.bodySm, color: Colors.onSurfaceVariant },
 });

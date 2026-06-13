@@ -13,7 +13,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="index" />
       <Tabs.Screen name="clase" />
-      <Tabs.Screen name="antrenamente" />
+      <Tabs.Screen name="antrenori" />
       <Tabs.Screen name="abonamente" />
       <Tabs.Screen name="profil" />
     </Tabs>
