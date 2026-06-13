@@ -1,16 +1,17 @@
 import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const STORAGE_KEY = 'maxfit:rezervari:v1';
+const STORAGE_KEY = 'maxfit:rezervari:v2';
 
 export interface Rezervare {
-  key: string; // unic: `${dataISO}-${classId}`
+  key: string; // unic: `${locatieId}-${dataISO}-${classId}`
   classId: string;
   nume: string;
+  categorie: string;
   ora: string;
   durata: string;
-  instructor: string;
-  sala: string;
+  locatieId: string;
+  locatieNume: string;
   dataISO: string; // ziua rezervării (yyyy-mm-dd)
   dataLabel: string; // ex. „Sâ, 14 iun"
 }

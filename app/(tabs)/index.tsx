@@ -4,14 +4,16 @@ import { useRouter } from 'expo-router';
 import Card from '@/components/Card';
 import TopBar from '@/components/TopBar';
 import { Colors, Spacing, Type, Radius, Shadow } from '@/constants/theme';
-import { ORAR, LOCATIE_PRINCIPALA } from '@/constants/data';
+import { ORAR } from '@/constants/data';
+import { useLocatie } from '@/context/Location';
 
 export default function Acasa() {
   const router = useRouter();
+  const { locatie } = useLocatie();
 
   const weekday = (new Date().getDay() + 6) % 7;
-  const claseAzi = (ORAR[weekday] ?? []).slice(0, 4);
-  const oreGym = LOCATIE_PRINCIPALA.program[0].ore;
+  const claseAzi = (ORAR[locatie.id][weekday] ?? []).slice(0, 4);
+  const oreGym = locatie.programFitness[0].ore;
 
   return (
     <View style={styles.container}>
@@ -82,8 +84,8 @@ export default function Acasa() {
                   </View>
                   <Text style={styles.classCardTitle}>{clasa.nume}</Text>
                   <View style={styles.instructorRow}>
-                    <MaterialIcons name="person" size={16} color={Colors.onSurfaceVariant} />
-                    <Text style={styles.instructorText}>{clasa.instructor}</Text>
+                    <MaterialIcons name="schedule" size={16} color={Colors.onSurfaceVariant} />
+                    <Text style={styles.instructorText}>{clasa.durata}</Text>
                   </View>
                 </Card>
               ))}

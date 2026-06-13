@@ -1,101 +1,221 @@
 // Sursa unică de date pentru MaxFit Galați.
-// Datele de contact, adresele și programul sunt REALE (Max Fitness Galați, maxfitness.ro).
-// Prețurile abonamentelor și orarul detaliat al claselor sunt ORIENTATIVE (de înlocuit cu
-// cele oficiale înainte de publicare) — tipurile de clase sunt însă cele oferite real de sală.
+// Date REALE preluate din posterele oficiale (program + prețuri) și site-ul maxfitness.ro.
+// Valabile până la 31.12.2026. Durata unei ședințe de clasă: 50 min.
 
-// ─── Contact & locații (REALE) ──────────────────────────────────────────────
+export type LocatieId = 'cosbuc' | '21';
+
+// ─── Locații (contact + program fitness) ────────────────────────────────────
+export interface Locatie {
+  id: LocatieId;
+  nume: string;
+  adresa: string;
+  telefon: string;
+  programFitness: { zile: string; ore: string }[];
+}
+
 export const GYM = {
   nume: 'Max Fitness Galați',
   email: 'contact@maxfitness.ro',
   facebook: 'https://www.facebook.com/maxfitnessgalati',
-  locatii: [
-    {
-      id: 'cosbuc',
-      nume: 'MaxFit Coșbuc',
-      adresa: 'Bd. George Coșbuc nr. 117, Galați',
-      telefon: '+40 748 039 333',
-      program: [
-        { zile: 'Luni – Vineri', ore: '06:00 – 23:00' },
-        { zile: 'Sâmbătă', ore: '08:00 – 19:00' },
-        { zile: 'Duminică', ore: '09:00 – 17:00' },
-      ],
-    },
-    {
-      id: '21',
-      nume: 'MaxFit 21',
-      adresa: 'Bd. Oțelarilor nr. 11, Galați',
-      telefon: '+40 748 039 333',
-      program: [
-        { zile: 'Luni – Vineri', ore: '06:00 – 22:00' },
-        { zile: 'Sâmbătă', ore: '09:00 – 17:00' },
-        { zile: 'Duminică', ore: '09:00 – 15:00' },
-      ],
-    },
-  ],
-} as const;
+};
 
-// Locația principală folosită implicit în UI (homepage, profil)
-export const LOCATIE_PRINCIPALA = GYM.locatii[0];
+export const LOCATII: Record<LocatieId, Locatie> = {
+  cosbuc: {
+    id: 'cosbuc',
+    nume: 'MaxFit Coșbuc',
+    adresa: 'Bd. George Coșbuc nr. 117, Galați',
+    telefon: '+40 748 039 333',
+    programFitness: [
+      { zile: 'Luni – Vineri', ore: '05:30 – 00:00' },
+      { zile: 'Sâmbătă', ore: '08:00 – 19:00' },
+      { zile: 'Duminică', ore: '09:00 – 17:00' },
+    ],
+  },
+  '21': {
+    id: '21',
+    nume: 'MaxFit 21',
+    adresa: 'Bd. Oțelarilor nr. 11, Galați',
+    telefon: '+40 748 039 333',
+    programFitness: [
+      { zile: 'Luni – Vineri', ore: '06:00 – 22:00' },
+      { zile: 'Sâmbătă', ore: '09:00 – 17:00' },
+      { zile: 'Duminică', ore: '09:00 – 15:00' },
+    ],
+  },
+};
 
-// ─── Clase de grup ──────────────────────────────────────────────────────────
-// Tipurile sunt cele oferite real de Max Fitness: Spinning, Zumba, CrossFit,
-// TRX, Box, Body Combat, Kangoo Jumps, Step, Aerobic. Orele sunt orientative.
+export const LISTA_LOCATII: Locatie[] = [LOCATII.cosbuc, LOCATII['21']];
 
+// ─── Orar clase de grup (REAL, pe locație și zi) ─────────────────────────────
 export interface Clasa {
   id: string;
   nume: string;
-  categorie: string; // Cardio / Forță / Dans / Funcțional
+  categorie: string;
   ora: string;
   durata: string;
-  instructor: string;
-  sala: string;
   capacitate: number;
   ocupate: number;
 }
 
-// Orar pe zi a săptămânii (0 = Luni ... 6 = Duminică).
-export const ORAR: Record<number, Clasa[]> = {
-  0: [
-    { id: 'lu-1', nume: 'Spinning Intense', categorie: 'Cardio', ora: '18:00', durata: '50 min', instructor: 'Alexandru M.', sala: 'Sala 2', capacitate: 16, ocupate: 4 },
-    { id: 'lu-2', nume: 'CrossFit WOD', categorie: 'Forță', ora: '19:00', durata: '60 min', instructor: 'Mihai T.', sala: 'Sala 1', capacitate: 14, ocupate: 11 },
-    { id: 'lu-3', nume: 'Zumba Flow', categorie: 'Dans', ora: '20:15', durata: '45 min', instructor: 'Elena D.', sala: 'Sala 2', capacitate: 20, ocupate: 20 },
+const mk = (id: string, nume: string, categorie: string, ora: string, ocupate: number, capacitate = 16): Clasa => ({
+  id,
+  nume,
+  categorie,
+  ora,
+  durata: '50 min',
+  capacitate,
+  ocupate,
+});
+
+// Index zi: 0 = Luni ... 6 = Duminică. Sâmbătă/Duminică: doar fitness, fără clase.
+export const ORAR: Record<LocatieId, Record<number, Clasa[]>> = {
+  cosbuc: {
+    0: [
+      mk('c-lu-0900', 'Vreau să slăbesc', 'Slăbire', '09:00', 6),
+      mk('c-lu-1700', 'Step Aerobic', 'Aerobic', '17:00', 9),
+      mk('c-lu-1800', 'Body Pump', 'Forță', '18:00', 12),
+      mk('c-lu-1900', 'Kangoo Jumps', 'Cardio', '19:00', 7),
+      mk('c-lu-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 5),
+    ],
+    1: [
+      mk('c-ma-1700', 'Movement 4Everyone', 'Funcțional', '17:00', 4),
+      mk('c-ma-1800', 'Body Pump', 'Forță', '18:00', 11),
+      mk('c-ma-1900', 'Karate', 'Arte marțiale', '19:00', 8),
+    ],
+    2: [
+      mk('c-mi-0900', 'Vreau să slăbesc', 'Slăbire', '09:00', 5),
+      mk('c-mi-1700', 'Circuit Aerobic', 'Aerobic', '17:00', 10),
+      mk('c-mi-1800', 'Body Pump', 'Forță', '18:00', 13),
+      mk('c-mi-1900', 'Kangoo Jumps', 'Cardio', '19:00', 9),
+      mk('c-mi-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 6),
+    ],
+    3: [
+      mk('c-jo-1700', 'Movement 4Everyone', 'Funcțional', '17:00', 5),
+      mk('c-jo-1800', 'Body Pump', 'Forță', '18:00', 10),
+      mk('c-jo-1900', 'Karate', 'Arte marțiale', '19:00', 7),
+    ],
+    4: [
+      mk('c-vi-0900', 'Vreau să slăbesc', 'Slăbire', '09:00', 4),
+      mk('c-vi-1700', 'Fitbal Aerobic', 'Aerobic', '17:00', 8),
+      mk('c-vi-1800', 'Body Pump', 'Forță', '18:00', 12),
+      mk('c-vi-1900', 'Kangoo Jumps', 'Cardio', '19:00', 16), // plin (exemplu)
+      mk('c-vi-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 6),
+    ],
+    5: [],
+    6: [],
+  },
+  '21': {
+    0: [
+      mk('21-lu-0900', 'Morning Aerobic', 'Aerobic', '09:00', 5),
+      mk('21-lu-1700', 'Aerobic', 'Aerobic', '17:00', 8),
+      mk('21-lu-1900', 'Body Pump', 'Forță', '19:00', 11),
+      mk('21-lu-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 6),
+    ],
+    1: [mk('21-ma-1700', 'Aerobic', 'Aerobic', '17:00', 7)],
+    2: [
+      mk('21-mi-0900', 'Morning Aerobic', 'Aerobic', '09:00', 4),
+      mk('21-mi-1700', 'Aerobic', 'Aerobic', '17:00', 9),
+      mk('21-mi-1900', 'Body Pump', 'Forță', '19:00', 10),
+      mk('21-mi-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 5),
+    ],
+    3: [mk('21-jo-1700', 'Aerobic', 'Aerobic', '17:00', 6)],
+    4: [
+      mk('21-vi-0900', 'Morning Aerobic', 'Aerobic', '09:00', 5),
+      mk('21-vi-1700', 'Aerobic', 'Aerobic', '17:00', 8),
+      mk('21-vi-1900', 'Body Pump', 'Forță', '19:00', 12),
+      mk('21-vi-2000', 'Vreau să slăbesc', 'Slăbire', '20:00', 7),
+    ],
+    5: [],
+    6: [],
+  },
+};
+
+// ─── Prețuri clase (REAL, pe locație) ────────────────────────────────────────
+// Coloane: 1 ședință / 8 ședințe / 12 ședințe / Nelimitat. null = indisponibil („-").
+export interface PretClasa {
+  clasa: string;
+  preturi: (number | null)[];
+}
+
+export const COLOANE_CLASE = ['1 ședință', '8 ședințe', '12 ședințe', 'Nelimitat'];
+
+export const PRETURI_CLASE: Record<LocatieId, PretClasa[]> = {
+  cosbuc: [
+    { clasa: 'Aerobic', preturi: [50, 170, 210, null] },
+    { clasa: 'Vreau să slăbesc', preturi: [50, 170, 210, null] },
+    { clasa: 'Kangoo Jumps', preturi: [50, 170, 210, null] },
+    { clasa: 'Body Pump', preturi: [50, 170, 210, 250] },
+    { clasa: 'Movement 4Everyone', preturi: [50, 170, null, null] },
   ],
-  1: [
-    { id: 'ma-1', nume: 'TRX Full Body', categorie: 'Funcțional', ora: '08:00', durata: '45 min', instructor: 'Andrei P.', sala: 'Sala 1', capacitate: 12, ocupate: 5 },
-    { id: 'ma-2', nume: 'Body Combat', categorie: 'Cardio', ora: '18:30', durata: '55 min', instructor: 'Cristina V.', sala: 'Sala 2', capacitate: 18, ocupate: 9 },
-    { id: 'ma-3', nume: 'Spinning Power', categorie: 'Cardio', ora: '20:00', durata: '50 min', instructor: 'Alexandru M.', sala: 'Sala 2', capacitate: 16, ocupate: 13 },
-  ],
-  2: [
-    { id: 'mi-1', nume: 'Kangoo Jumps', categorie: 'Cardio', ora: '18:00', durata: '50 min', instructor: 'Elena D.', sala: 'Sala 2', capacitate: 15, ocupate: 7 },
-    { id: 'mi-2', nume: 'CrossFit WOD', categorie: 'Forță', ora: '19:00', durata: '60 min', instructor: 'Mihai T.', sala: 'Sala 1', capacitate: 14, ocupate: 14 },
-    { id: 'mi-3', nume: 'Box Fitness', categorie: 'Forță', ora: '20:15', durata: '60 min', instructor: 'George S.', sala: 'Sala 1', capacitate: 12, ocupate: 6 },
-  ],
-  3: [
-    { id: 'jo-1', nume: 'Step Aerobic', categorie: 'Cardio', ora: '09:00', durata: '45 min', instructor: 'Cristina V.', sala: 'Sala 2', capacitate: 18, ocupate: 3 },
-    { id: 'jo-2', nume: 'Spinning Intense', categorie: 'Cardio', ora: '18:30', durata: '50 min', instructor: 'Alexandru M.', sala: 'Sala 2', capacitate: 16, ocupate: 10 },
-    { id: 'jo-3', nume: 'Zumba Flow', categorie: 'Dans', ora: '20:00', durata: '45 min', instructor: 'Elena D.', sala: 'Sala 2', capacitate: 20, ocupate: 16 },
-  ],
-  4: [
-    { id: 'vi-1', nume: 'TRX Full Body', categorie: 'Funcțional', ora: '18:00', durata: '45 min', instructor: 'Andrei P.', sala: 'Sala 1', capacitate: 12, ocupate: 8 },
-    { id: 'vi-2', nume: 'Body Combat', categorie: 'Cardio', ora: '19:00', durata: '55 min', instructor: 'Cristina V.', sala: 'Sala 2', capacitate: 18, ocupate: 12 },
-    { id: 'vi-3', nume: 'CrossFit WOD', categorie: 'Forță', ora: '20:15', durata: '60 min', instructor: 'Mihai T.', sala: 'Sala 1', capacitate: 14, ocupate: 9 },
-  ],
-  5: [
-    { id: 'sa-1', nume: 'Spinning Weekend', categorie: 'Cardio', ora: '10:00', durata: '50 min', instructor: 'Alexandru M.', sala: 'Sala 2', capacitate: 16, ocupate: 6 },
-    { id: 'sa-2', nume: 'Kangoo Jumps', categorie: 'Cardio', ora: '11:30', durata: '50 min', instructor: 'Elena D.', sala: 'Sala 2', capacitate: 15, ocupate: 11 },
-  ],
-  6: [
-    { id: 'du-1', nume: 'Zumba Flow', categorie: 'Dans', ora: '11:00', durata: '45 min', instructor: 'Elena D.', sala: 'Sala 2', capacitate: 20, ocupate: 8 },
+  '21': [
+    { clasa: 'Aerobic', preturi: [50, 150, 190, 220] },
+    { clasa: 'Vreau să slăbesc', preturi: [50, 170, 210, null] },
+    { clasa: 'Body Pump', preturi: [50, 170, 210, null] },
+    { clasa: 'Box Personal Trainer', preturi: [70, 500, 650, null] },
   ],
 };
 
+// Oferta „all-inclusive" pe locație (toate clasele + fitness full time)
+export const OFERTA_CLASE: Record<LocatieId, { text: string; pret: number }> = {
+  cosbuc: { text: 'Toate clasele + Fitness Full Time', pret: 400 },
+  '21': { text: 'Full Access (toate clasele + Fitness)', pret: 400 },
+};
+
+export const SOLAR = [
+  { durata: '1 minut', pret: 2.5 },
+  { durata: '50 minute', pret: 100 },
+  { durata: '100 minute', pret: 170 },
+];
+
+// ─── Personal Trainer (REAL) ─────────────────────────────────────────────────
+export const COLOANE_PT = ['1 ședință', '8 ședințe', '12 ședințe', 'Nelimitat'];
+export const PERSONAL_TRAINER: PretClasa[] = [
+  { clasa: 'Solo', preturi: [75, 490, 590, 790] },
+  { clasa: 'Grup PT', preturi: [69, 450, 490, 690] },
+  { clasa: 'Box', preturi: [70, 500, 650, null] },
+];
+export const NOTA_PT =
+  'Ședințele durează 1h. Grup PT — participarea a minimum 2 persoane. Nelimitat — până la 20 de ședințe.';
+
+// ─── Fitness (REAL) ──────────────────────────────────────────────────────────
+export const COLOANE_FITNESS = ['Băieți', 'Fete', 'Studenți'];
+export const PRETURI_FITNESS: PretClasa[] = [
+  { clasa: '1 ședință', preturi: [40, 40, 30] },
+  { clasa: '1 săptămână', preturi: [90, 90, 90] },
+  { clasa: '2 săptămâni', preturi: [130, 130, 130] },
+  { clasa: '3 săptămâni', preturi: [144, 144, 144] },
+  { clasa: '1 lună', preturi: [179, 179, 169] },
+  { clasa: '1 lună student part-time', preturi: [null, null, 149] },
+];
+export const NOTA_FITNESS =
+  'Prețurile conțin TVA 21%. 1 ședință valabilă 2 ore. Program: Luni–Vineri 05:30–23:00.';
+
+// ─── Abonamente fitness (Silver / Gold / Platinium) (REAL) ───────────────────
+export interface Abonament {
+  id: string;
+  durata: string;
+  luni: number; // durata în luni (pentru calculul expirării)
+  nume: string;
+  normal: number; // preț total normal (RON)
+  normalLunar: number;
+  student: number; // preț total elevi/studenți
+  studentLunar: number;
+  popular?: boolean;
+}
+
+export const ABONAMENTE: Abonament[] = [
+  { id: 'silver', durata: '3 LUNI', luni: 3, nume: 'Silver', normal: 420, normalLunar: 140, student: 390, studentLunar: 130 },
+  { id: 'gold', durata: '6 LUNI', luni: 6, nume: 'Gold', normal: 715, normalLunar: 119, student: 615, studentLunar: 102.5, popular: true },
+  { id: 'platinium', durata: '1 AN', luni: 12, nume: 'Platinium', normal: 1195, normalLunar: 99, student: 1020, studentLunar: 85 },
+];
+export const NOTA_ABONAMENTE = 'Toate abonamentele includ freeze 2 săptămâni. Prețuri valabile până la 31.12.2026.';
+
 // ─── Antrenori (personal training) ──────────────────────────────────────────
-// Max Fitness oferă real antrenori personali. Numele/specializările sunt orientative.
 export interface Antrenor {
   id: string;
   nume: string;
   specializare: string;
-  experienta: string; // ex. „8 ani experiență"
+  experienta: string;
   descriere: string;
   taguri: string[];
 }
@@ -132,56 +252,5 @@ export const ANTRENORI: Antrenor[] = [
     experienta: '7 ani experiență',
     descriere: 'TRX, mobilitate și recuperare. Ideal pentru începători și reabilitare.',
     taguri: ['Funcțional', 'Mobilitate', 'TRX'],
-  },
-];
-
-// ─── Abonamente (PREȚURI ORIENTATIVE — de actualizat cu cele oficiale) ───────
-export interface Beneficiu {
-  text: string;
-  inclus: boolean;
-}
-
-export interface Plan {
-  id: string;
-  nume: string;
-  pret: number;
-  beneficii: Beneficiu[];
-  popular?: boolean;
-}
-
-export const PLANURI: Plan[] = [
-  {
-    id: 'basic',
-    nume: 'Basic',
-    pret: 150,
-    beneficii: [
-      { text: 'Acces zonă fitness', inclus: true },
-      { text: 'Vestiar & Dușuri', inclus: true },
-      { text: 'Clase de grup', inclus: false },
-      { text: 'Plan antrenament personalizat', inclus: false },
-    ],
-  },
-  {
-    id: 'full',
-    nume: 'Full Access',
-    pret: 220,
-    popular: true,
-    beneficii: [
-      { text: 'Acces nelimitat zonă fitness', inclus: true },
-      { text: 'Vestiar & Dușuri premium', inclus: true },
-      { text: 'Acces la toate clasele de grup', inclus: true },
-      { text: 'Antrenor Personal', inclus: false },
-    ],
-  },
-  {
-    id: 'premium',
-    nume: 'Premium',
-    pret: 350,
-    beneficii: [
-      { text: 'Acces nelimitat VIP', inclus: true },
-      { text: 'Vestiar privat & prosoape', inclus: true },
-      { text: 'Prioritate clase de grup', inclus: true },
-      { text: '4 ședințe Antrenor Personal/lună', inclus: true },
-    ],
   },
 ];

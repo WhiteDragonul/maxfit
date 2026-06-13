@@ -12,9 +12,11 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Card from '@/components/Card';
 import TopBar from '@/components/TopBar';
+import LocationToggle from '@/components/LocationToggle';
 import { Colors, Spacing, Type, Radius, Shadow } from '@/constants/theme';
 import { ORAR } from '@/constants/data';
 import { useReservations, Rezervare } from '@/context/Reservations';
+import { useLocatie } from '@/context/Location';
 
 const ZILE_SCURT = ['Du', 'Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ']; // index = Date.getDay()
 const LUNI_SCURT = ['ian', 'feb', 'mar', 'apr', 'mai', 'iun', 'iul', 'aug', 'sep', 'oct', 'noi', 'dec'];
@@ -23,7 +25,7 @@ interface Zi {
   dataISO: string;
   scurt: string;
   data: number;
-  weekday: number; // 0 = Luni ... 6 = Duminică (cheie în ORAR)
+  weekday: number; // 0 = Luni ... 6 = Duminică
   label: string;
   esteAzi: boolean;
 }
@@ -33,6 +35,7 @@ export default function Clase() {
   const [ziSelectata, setZiSelectata] = useState(0);
   const [confirmare, setConfirmare] = useState<Rezervare | null>(null);
   const { isReserved, reserve, cancel } = useReservations();
+  const { locatie } = useLocatie();
 
   const ZILE = useMemo<Zi[]>(() => {
     const azi = new Date();
@@ -52,7 +55,7 @@ export default function Clase() {
   }, []);
 
   const zi = ZILE[ziSelectata];
-  const claseZi = ORAR[zi.weekday] ?? [];
+  const claseZi = ORAR[locatie.id][zi.weekday] ?? [];
 
   return (
     <View style={styles.container}>
@@ -62,6 +65,8 @@ export default function Clase() {
           <Text style={styles.pageTitle}>Clase</Text>
           <Text style={styles.pageSubtitle}>Rezervă-ți locul la clasele preferate.</Text>
         </View>
+
+        <LocationToggle />
 
         {/* Selector zile */}
         <ScrollView
@@ -92,10 +97,17 @@ export default function Clase() {
         {/* Lista de clase */}
         <View style={{ gap: Spacing.gap }}>
           {claseZi.length === 0 && (
-            <Text style={styles.empty}>Nu există clase programate în această zi.</Text>
+            <Card padding={Spacing.lg}>
+              <View style={styles.emptyBox}>
+                <MaterialIcons name="self-improvement" size={28} color={Colors.onSurfaceVariant} />
+                <Text style={styles.empty}>
+                  În această zi nu sunt clase de grup la {locatie.nume} — doar acces fitness.
+                </Text>
+              </View>
+            </Card>
           )}
           {claseZi.map((clasa) => {
-            const key = `${zi.dataISO}-${clasa.id}`;
+            const key = `${locatie.id}-${zi.dataISO}-${clasa.id}`;
             const rezervat = isReserved(key);
             const locuriRamase = clasa.capacitate - clasa.ocupate - (rezervat ? 1 : 0);
             const ocupat = !rezervat && locuriRamase <= 0;
@@ -105,10 +117,11 @@ export default function Clase() {
                 key,
                 classId: clasa.id,
                 nume: clasa.nume,
+                categorie: clasa.categorie,
                 ora: clasa.ora,
                 durata: clasa.durata,
-                instructor: clasa.instructor,
-                sala: clasa.sala,
+                locatieId: locatie.id,
+                locatieNume: locatie.nume,
                 dataISO: zi.dataISO,
                 dataLabel: zi.esteAzi ? 'Azi' : zi.label,
               };
@@ -124,9 +137,9 @@ export default function Clase() {
                     <Text style={[styles.timeBoxHour, { color: rezervat || ocupat ? Colors.onSurface : Colors.primary }]}>
                       {clasa.ora}
                     </Text>
-                    <Text style={styles.timeBoxDur}>{clasa.durata.replace(' min', ' MIN')}</Text>
+                    <Text style={styles.timeBoxDur}>50 MIN</Text>
                   </View>
-                  <View style={{ flex: 1, gap: 4 }}>
+                  <View style={{ flex: 1, gap: 6 }}>
                     <View style={styles.titleRow}>
                       <Text style={styles.className}>{clasa.nume}</Text>
                       {rezervat ? (
@@ -144,9 +157,8 @@ export default function Clase() {
                         </View>
                       )}
                     </View>
-                    <View style={styles.instructorRow}>
-                      <MaterialIcons name="person" size={15} color={Colors.onSurfaceVariant} />
-                      <Text style={styles.instructorText}>Instructor: {clasa.instructor}</Text>
+                    <View style={styles.categoryChip}>
+                      <Text style={styles.categoryChipText}>{clasa.categorie}</Text>
                     </View>
                   </View>
                 </View>
@@ -181,7 +193,7 @@ export default function Clase() {
             </View>
             <Text style={styles.sheetTitle}>Rezervare Confirmată!</Text>
             <Text style={styles.sheetText}>
-              Te-ai înscris cu succes la clasa de {confirmare?.nume} de la {confirmare?.ora}. Te așteptăm!
+              Te-ai înscris la {confirmare?.nume} de la {confirmare?.ora}, {confirmare?.locatieNume}. Te așteptăm!
             </Text>
             <View style={styles.detailsCard}>
               <View style={styles.detailsRow}>
@@ -190,11 +202,16 @@ export default function Clase() {
               </View>
               <View style={styles.detailsDivider} />
               <View style={styles.detailsRow}>
+                <Text style={styles.detailsLabel}>Locație</Text>
+                <Text style={styles.detailsValue}>{confirmare?.locatieNume}</Text>
+              </View>
+              <View style={styles.detailsDivider} />
+              <View style={styles.detailsRow}>
                 <Text style={styles.detailsLabel}>Oră</Text>
                 <Text style={styles.detailsValue}>{confirmare?.ora}</Text>
               </View>
             </View>
-            <TouchableOpacity style={styles.btnPrimary} activeOpacity={0.85} onPress={() => setConfirmare(null)}>
+            <TouchableOpacity style={[styles.btnPrimary, { width: '100%' }]} activeOpacity={0.85} onPress={() => setConfirmare(null)}>
               <Text style={styles.btnPrimaryText}>Gata</Text>
             </TouchableOpacity>
           </View>
@@ -214,7 +231,8 @@ const styles = StyleSheet.create({
   },
   pageTitle: { ...Type.display, color: Colors.onSurface, marginBottom: 4 },
   pageSubtitle: { ...Type.bodyMd, color: Colors.onSurfaceVariant },
-  empty: { ...Type.bodyMd, color: Colors.onSurfaceVariant, textAlign: 'center', paddingVertical: 32 },
+  emptyBox: { alignItems: 'center', gap: 12 },
+  empty: { ...Type.bodyMd, color: Colors.onSurfaceVariant, textAlign: 'center', maxWidth: 280 },
 
   dayChip: {
     minWidth: 52,
@@ -255,6 +273,8 @@ const styles = StyleSheet.create({
   timeBoxDur: { ...Type.label, color: Colors.onSurfaceVariant, letterSpacing: 0.4, marginTop: 2 },
   titleRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flexWrap: 'wrap' },
   className: { ...Type.bodyLgSemi, color: Colors.onSurface },
+  categoryChip: { alignSelf: 'flex-start', backgroundColor: Colors.surfaceAlt, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
+  categoryChipText: { ...Type.label, color: Colors.onSurfaceVariant, letterSpacing: 0 },
   pill: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 3, borderRadius: Radius.pill },
   pillSpots: { backgroundColor: Colors.primarySoft },
   pillSpotsText: { ...Type.label, color: Colors.onPrimarySoft, letterSpacing: 0 },
@@ -262,8 +282,6 @@ const styles = StyleSheet.create({
   pillReservedText: { ...Type.label, color: Colors.onSurfaceVariant, letterSpacing: 0 },
   pillFull: { backgroundColor: '#fdeceb' },
   pillFullText: { ...Type.label, color: Colors.error, letterSpacing: 0 },
-  instructorRow: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  instructorText: { ...Type.bodySm, color: Colors.onSurfaceVariant },
 
   btnPrimary: {
     backgroundColor: Colors.primary,
